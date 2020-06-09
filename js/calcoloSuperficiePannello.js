@@ -11,6 +11,7 @@ var stepsPannelliSize=100;
 var stepsKit=100;
 var oldStepsKit;
 var stepsKitSize=100;
+var mostraCodiciCabina;
 
 function checkCodiciCabina()
 {
@@ -60,7 +61,10 @@ function checkCodiciCabina()
 }
 async function printInfoSuperficiePannello()
 {
-    document.getElementById("textareaElencoCodiciCabina").value="";
+    //document.getElementById("textareaElencoCodiciCabina").value="";
+
+    mostraCodiciCabina=document.getElementById("checkboxMostraCodiciCabina").checked;
+    //console.log(mostraCodiciCabina);
 
     document.getElementById("btnCheckCodiciCabina").disabled=true;
 
@@ -264,49 +268,102 @@ function getTablePannelli()
 
     document.getElementById("tablePannelliContainer").innerHTML="";
 
-    var pannelliHeaders=
-    [
-        {
-            value:"database",
-            label:"Database"
-        },
-        {
-            value:"codele",
-            label:"Pannello"
-        },
-        {
-            value:"lung1",
-            label:"Lunghezza 1"
-        },
-        {
-            value:"lung2",
-            label:"Lunghezza 2"
-        },
-        {
-            value:"halt",
-            label:"Altezza"
-        },
-        {
-            value:"qnt",
-            label:"Quantita"
-        },
-        {
-            value:"ang",
-            label:"Angolo"
-        },
-        {
-            value:"mq",
-            label:"M.Q."
-        },
-        {
-            value:"mq_totali",
-            label:"M.Q. totali"
-        },
-        {
-            value:"forati",
-            label:"Forati"
-        }
-    ];
+    if(mostraCodiciCabina)
+    {
+        var pannelliHeaders=
+        [
+            {
+                value:"database",
+                label:"Database"
+            },
+            {
+                value:"codcab",
+                label:"Cabina"
+            },
+            {
+                value:"codele",
+                label:"Pannello"
+            },
+            {
+                value:"lung1",
+                label:"Lunghezza 1"
+            },
+            {
+                value:"lung2",
+                label:"Lunghezza 2"
+            },
+            {
+                value:"halt",
+                label:"Altezza"
+            },
+            {
+                value:"qnt",
+                label:"Quantita"
+            },
+            {
+                value:"ang",
+                label:"Angolo"
+            },
+            {
+                value:"mq",
+                label:"M.Q."
+            },
+            {
+                value:"mq_totali",
+                label:"M.Q. totali"
+            },
+            {
+                value:"forati",
+                label:"Forati"
+            }
+        ];
+    }
+    else
+    {
+        var pannelliHeaders=
+        [
+            {
+                value:"database",
+                label:"Database"
+            },
+            {
+                value:"codele",
+                label:"Pannello"
+            },
+            {
+                value:"lung1",
+                label:"Lunghezza 1"
+            },
+            {
+                value:"lung2",
+                label:"Lunghezza 2"
+            },
+            {
+                value:"halt",
+                label:"Altezza"
+            },
+            {
+                value:"qnt",
+                label:"Quantita"
+            },
+            {
+                value:"ang",
+                label:"Angolo"
+            },
+            {
+                value:"mq",
+                label:"M.Q."
+            },
+            {
+                value:"mq_totali",
+                label:"M.Q. totali"
+            },
+            {
+                value:"forati",
+                label:"Forati"
+            }
+        ];
+    }
     
     var pannelliTable=document.createElement("table");
     pannelliTable.setAttribute("id","pannelliTable");
@@ -370,37 +427,78 @@ function getTableKit()
 
     document.getElementById("tableKitContainer").innerHTML="";
 
-    var kitHeaders=
-    [
-        {
-            value:"database",
-            label:"Database"
-        },
-        {
-            value:"codkit",
-            label:"Kit"
-        },
-        {
-            value:"halt",
-            label:"Altezza"
-        },
-        {
-            value:"lung",
-            label:"Lunghezza"
-        },
-        {
-            value:"qnt",
-            label:"Quantita"
-        },
-        {
-            value:"mq",
-            label:"M.Q."
-        },
-        {
-            value:"mq_totali",
-            label:"M.Q. totali"
-        }
-    ];
+    if(mostraCodiciCabina)
+    {
+        var kitHeaders=
+        [
+            {
+                value:"database",
+                label:"Database"
+            },
+            {
+                value:"codcab",
+                label:"Cabina"
+            },
+            {
+                value:"codkit",
+                label:"Kit"
+            },
+            {
+                value:"halt",
+                label:"Altezza"
+            },
+            {
+                value:"lung",
+                label:"Lunghezza"
+            },
+            {
+                value:"qnt",
+                label:"Quantita"
+            },
+            {
+                value:"mq",
+                label:"M.Q."
+            },
+            {
+                value:"mq_totali",
+                label:"M.Q. totali"
+            }
+        ];
+    }
+    else
+    {
+        var kitHeaders=
+        [
+            {
+                value:"database",
+                label:"Database"
+            },
+            {
+                value:"codkit",
+                label:"Kit"
+            },
+            {
+                value:"halt",
+                label:"Altezza"
+            },
+            {
+                value:"lung",
+                label:"Lunghezza"
+            },
+            {
+                value:"qnt",
+                label:"Quantita"
+            },
+            {
+                value:"mq",
+                label:"M.Q."
+            },
+            {
+                value:"mq_totali",
+                label:"M.Q. totali"
+            }
+        ];
+    }
     
     var kitTable=document.createElement("table");
     kitTable.setAttribute("id","kitTable");
@@ -480,7 +578,8 @@ function getInfoSuperficiePannello()
         var JSONcodici=JSON.stringify(codici);
         $.post("getInfoSuperficiePannello.php",
         {
-            JSONcodici
+            JSONcodici,
+            mostraCodiciCabina
         },
         function(response, status)
         {
@@ -566,11 +665,17 @@ function esportaExcel()
 
                 var rowTotali=document.createElement("tr");
                 var td=document.createElement("td");
-                td.setAttribute("colspan","5");
+                if(mostraCodiciCabina)
+                    td.setAttribute("colspan","6");
+                else
+                    td.setAttribute("colspan","5");
                 td.innerHTML="TOTALI";
                 rowTotali.appendChild(td);
                 var td=document.createElement("td");
-                td.setAttribute("colspan","2");
+                if(mostraCodiciCabina)
+                    td.setAttribute("colspan","3");
+                else
+                    td.setAttribute("colspan","2");
                 td.innerHTML=totaliPannelli.qnt;
                 rowTotali.appendChild(td);
                 var td=document.createElement("td");
@@ -642,6 +747,12 @@ function esportaExcel()
                 var blob;
                 var wb = {SheetNames:[], Sheets:{}};
                 
+                var codiciString="<tr><td>"+codici.join("</td><tr><td>");
+                codiciString += "</td></tr>";
+                var ws0 = XLSX.read("<html><table>"+codiciString+"</table></html>", {type:"binary"}).Sheets.Sheet1;
+                wb.SheetNames.push("Cabine"); 
+                wb.Sheets["Cabine"] = ws0;
+
                 var ws1 = XLSX.read(pannelliTableString, {type:"binary"}).Sheets.Sheet1;
                 wb.SheetNames.push("Pannelli"); 
                 wb.Sheets["Pannelli"] = ws1;
@@ -673,4 +784,8 @@ function s2ab(s)
     var view = new Uint8Array(buf);
     for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
     return buf;
+}
+function disableCheckboxMostraCodiciCabina(event)
+{
+    event.stopPropagation();
 }

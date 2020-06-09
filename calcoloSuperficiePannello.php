@@ -30,14 +30,10 @@
 				<span>Alcune cabine non sono state trovate</span>
 				<i class="fal fa-exclamation-triangle" style="margin-left:5px"></i>
 			</button>
-			<!--<button class="rcb-button-text-icon" onclick="esportaExcel('pannelliTable','superficiePannelli')">
-				<span>Esporta tabella pannelli</span>
-				<i class="fal fa-file-excel" style="margin-left:5px"></i>
-			</button>
-			<button class="rcb-button-text-icon" onclick="esportaExcel('kitTable','superficieKit')">
-				<span>Esporta tabella kit</span>
-				<i class="fal fa-file-excel" style="margin-left:5px"></i>
-			</button>-->
+            <button class="rcb-button-text-icon" id="btnMostraCodiciCabina" style="display:flex;flex.direction:row;align-items:center" onclick="document.getElementById('checkboxMostraCodiciCabina').checked=!document.getElementById('checkboxMostraCodiciCabina').checked;printInfoSuperficiePannello()">
+				<span>Mostra codici cabina</span>
+				<input onclick="disableCheckboxMostraCodiciCabina(event);printInfoSuperficiePannello()" type="checkbox" style="margin-left:10px" id="checkboxMostraCodiciCabina">
+            </button>
 		</div>
 		<div id="calcoloSuperficiePannelloContainer"></div>
 		<div id="footer">

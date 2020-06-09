@@ -7,6 +7,7 @@
     set_time_limit(3000);
 
     $codici=json_decode($_REQUEST["JSONcodici"]);
+    $mostraCodiciCabina=$_REQUEST["mostraCodiciCabina"];
 
     $subquery="";
     foreach ($codici as $codice)
@@ -21,7 +22,24 @@
     $arrayResponse["totaliPannelli"]["mq_totali"]=0;
     $arrayResponse["totaliPannelli"]["forati"]=0;
     
-    $qPannelli="SELECT [database], codele, lung1, lung2, halt, qnt, ang, mq, mq * qnt AS mq_totali, FORI AS forati
+    if($mostraCodiciCabina=="true")
+    {
+        $qPannelli="SELECT [database],CODCAB AS codcab, codele, lung1, lung2, halt, qnt, ang, mq, mq * qnt AS mq_totali, FORI AS forati
+        FROM (SELECT db AS [database],CODCAB, CODELE AS codele, LUNG1 AS lung1, LUNG2 AS lung2, HALT AS halt, FORI, SUM(QNT * Expr1) AS qnt, ANG AS ang, (LUNG1 + LUNG2) * HALT / 1000000 AS mq
+            FROM (SELECT dbo.cabine.CODCAB, dbo.cabine.db, dbo.cabkit.QNT, dbo.cabkit.CODKIT, dbo.kitpan.CODELE, dbo.kitpan.QNT AS Expr1, dbo.pannellil.LUNG1, dbo.pannellil.LUNG2, dbo.pannellil.HALT, dbo.pannellil.ANG, 
+                                                                dbo.kit.LUNG AS kit_lung, dbo.kit.HALT AS kit_halt, dbo.pannelli.FORI
+                                                                FROM ($subquery) AS elenco_cabine INNER JOIN
+                                                                dbo.cabine ON elenco_cabine.codcab = dbo.cabine.CODCAB LEFT OUTER JOIN
+                                                                dbo.cabkit INNER JOIN
+                                                                dbo.kit ON dbo.cabkit.CODKIT = dbo.kit.CODKIT INNER JOIN
+                                                                dbo.kitpan ON dbo.kit.CODKIT = dbo.kitpan.CODKIT INNER JOIN
+                                                                dbo.pannelli ON dbo.kitpan.CODELE = dbo.pannelli.CODPAS INNER JOIN
+                                                                dbo.pannellil ON dbo.pannelli.CODLAM = dbo.pannellil.CODPAN ON dbo.cabine.CODCAB = dbo.cabkit.CODCAB) AS derivedtbl_1
+            GROUP BY db, CODCAB,CODELE, LUNG1, LUNG2, HALT, FORI, ANG, (LUNG1 + LUNG2) * HALT / 1000000) AS derivedtbl_2 OPTION ( QUERYTRACEON 9481 )";
+    }
+    else
+    {
+        $qPannelli="SELECT [database], codele, lung1, lung2, halt, qnt, ang, mq, mq * qnt AS mq_totali, FORI AS forati
         FROM (SELECT db AS [database], CODELE AS codele, LUNG1 AS lung1, LUNG2 AS lung2, HALT AS halt, FORI, SUM(QNT * Expr1) AS qnt, ANG AS ang, (LUNG1 + LUNG2) * HALT / 1000000 AS mq
             FROM (SELECT dbo.cabine.CODCAB, dbo.cabine.db, dbo.cabkit.QNT, dbo.cabkit.CODKIT, dbo.kitpan.CODELE, dbo.kitpan.QNT AS Expr1, dbo.pannellil.LUNG1, dbo.pannellil.LUNG2, dbo.pannellil.HALT, dbo.pannellil.ANG, 
                                                                 dbo.kit.LUNG AS kit_lung, dbo.kit.HALT AS kit_halt, dbo.pannelli.FORI
@@ -33,6 +51,8 @@
                                                                 dbo.pannelli ON dbo.kitpan.CODELE = dbo.pannelli.CODPAS INNER JOIN
                                                                 dbo.pannellil ON dbo.pannelli.CODLAM = dbo.pannellil.CODPAN ON dbo.cabine.CODCAB = dbo.cabkit.CODCAB) AS derivedtbl_1
             GROUP BY db, CODELE, LUNG1, LUNG2, HALT, FORI, ANG, (LUNG1 + LUNG2) * HALT / 1000000) AS derivedtbl_2 OPTION ( QUERYTRACEON 9481 )";
+    }
+    
     $rPannelli=sqlsrv_query($conn,$qPannelli);
     if($rPannelli==FALSE)
     {
@@ -43,6 +63,8 @@
         while($rowPannelli=sqlsrv_fetch_array($rPannelli))
         {
             $pannello["database"]=$rowPannelli["database"];
+            if($mostraCodiciCabina=="true")
+                $pannello["codcab"]=$rowPannelli["codcab"];
             $pannello["codele"]=$rowPannelli["codele"];
             $pannello["lung1"]=number_format($rowPannelli['lung1'],2,",",".");
             $pannello["lung2"]=number_format($rowPannelli["lung2"],2,",",".");
@@ -68,13 +90,27 @@
     $arrayResponse["totaliKit"]["mq"]=0;
     $arrayResponse["totaliKit"]["mq_totali"]=0;
     
-    $qKit="SELECT db AS [database], CODKIT AS codkit, kit_halt AS halt, kit_lung AS lung, SUM(QNT) AS qnt, kit_halt * kit_lung / 1000000 AS mq, SUM(kit_halt * kit_lung * QNT / 1000000) AS mq_totali
+    if($mostraCodiciCabina=="true")
+    {
+        $qKit="SELECT db AS [database],CODCAB as codcab, CODKIT AS codkit, kit_halt AS halt, kit_lung AS lung, SUM(QNT) AS qnt, kit_halt * kit_lung / 1000000 AS mq, SUM(kit_halt * kit_lung * QNT / 1000000) AS mq_totali
+            FROM (SELECT cabine_1.CODCAB, cabine_1.db, dbo.cabkit.QNT, dbo.cabkit.CODKIT, dbo.kit.LUNG AS kit_lung, dbo.kit.HALT AS kit_halt
+                FROM dbo.cabkit INNER JOIN
+                                        dbo.kit ON dbo.cabkit.CODKIT = dbo.kit.CODKIT RIGHT OUTER JOIN
+                                            ($subquery) AS elenco_cabine INNER JOIN
+                                        dbo.cabine AS cabine_1 ON elenco_cabine.CODCAB = cabine_1.CODCAB ON dbo.cabkit.CODCAB = cabine_1.CODCAB) AS derivedtbl_1
+            GROUP BY db,CODCAB, CODKIT, kit_halt, kit_lung, kit_halt * kit_lung / 1000000 OPTION ( QUERYTRACEON 9481 )";
+    }
+    else
+    {
+        $qKit="SELECT db AS [database], CODKIT AS codkit, kit_halt AS halt, kit_lung AS lung, SUM(QNT) AS qnt, kit_halt * kit_lung / 1000000 AS mq, SUM(kit_halt * kit_lung * QNT / 1000000) AS mq_totali
             FROM (SELECT cabine_1.CODCAB, cabine_1.db, dbo.cabkit.QNT, dbo.cabkit.CODKIT, dbo.kit.LUNG AS kit_lung, dbo.kit.HALT AS kit_halt
                 FROM dbo.cabkit INNER JOIN
                                         dbo.kit ON dbo.cabkit.CODKIT = dbo.kit.CODKIT RIGHT OUTER JOIN
                                             ($subquery) AS elenco_cabine INNER JOIN
                                         dbo.cabine AS cabine_1 ON elenco_cabine.CODCAB = cabine_1.CODCAB ON dbo.cabkit.CODCAB = cabine_1.CODCAB) AS derivedtbl_1
             GROUP BY db, CODKIT, kit_halt, kit_lung, kit_halt * kit_lung / 1000000 OPTION ( QUERYTRACEON 9481 )";
+    }
+    
     $rKit=sqlsrv_query($conn,$qKit);
     if($rKit==FALSE)
     {
@@ -85,6 +121,8 @@
         while($rowKit=sqlsrv_fetch_array($rKit))
         {
             $kitItem["database"]=$rowKit["database"];
+            if($mostraCodiciCabina=="true")
+                $kitItem["codcab"]=$rowKit["codcab"];
             $kitItem["codkit"]=$rowKit["codkit"];
             $kitItem["halt"]=number_format($rowKit["halt"],2,",",".");
             $kitItem["lung"]=number_format($rowKit["lung"],2,",",".");
