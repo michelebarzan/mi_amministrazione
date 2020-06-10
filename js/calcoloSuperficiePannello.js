@@ -651,127 +651,143 @@ function esportaExcel()
             {
                 var fileName=document.getElementById("inputNomeFileEsportaExcel").value;
 
-                oldStepsPannelli=stepsPannelli;
-                stepsPannelli=pannelli.length;
-                getTablePannelli();
-                oldStepsKit=stepsKit;
-                stepsKit=kit.length;
-                getTableKit();
-
-                var pannelliTable=document.getElementById("pannelliTable").cloneNode(true)
-
-                var headerRow=pannelliTable.getElementsByTagName("thead")[0].getElementsByTagName("tr")[0];
-                var thead=pannelliTable.getElementsByTagName("thead")[0];
-
-                var rowTotali=document.createElement("tr");
-                var td=document.createElement("td");
-                if(mostraCodiciCabina)
-                    td.setAttribute("colspan","6");
-                else
-                    td.setAttribute("colspan","5");
-                td.innerHTML="TOTALI";
-                rowTotali.appendChild(td);
-                var td=document.createElement("td");
-                if(mostraCodiciCabina)
-                    td.setAttribute("colspan","3");
-                else
-                    td.setAttribute("colspan","2");
-                td.innerHTML=totaliPannelli.qnt;
-                rowTotali.appendChild(td);
-                var td=document.createElement("td");
-                td.innerHTML=totaliPannelli.mq;
-                rowTotali.appendChild(td);
-                var td=document.createElement("td");
-                td.innerHTML=totaliPannelli.mq_totali;
-                rowTotali.appendChild(td);
-                var td=document.createElement("td");
-                td.innerHTML=totaliPannelli.forati;
-                rowTotali.appendChild(td);
-                thead.appendChild(rowTotali);
-
-                var spaceRow=document.createElement("tr");
-                thead.appendChild(spaceRow);
-
-                var newRow=document.createElement("tr");
-                var ths=headerRow.getElementsByTagName("th");
-                for (let index = 0; index < ths.length; index++)
-                {
-                    const th = ths[index];
-                    var td=document.createElement("td");
-                    td.innerHTML=th.innerHTML;
-                    newRow.appendChild(td);
-                }
-                headerRow.remove();
-                thead.appendChild(newRow);
-
-                var pannelliTableString="<html>"+pannelliTable.outerHTML+"</html>";
-
-                var kitTable=document.getElementById("kitTable").cloneNode(true)
-
-                var headerRow=kitTable.getElementsByTagName("thead")[0].getElementsByTagName("tr")[0];
-                var thead=kitTable.getElementsByTagName("thead")[0];
-
-                var rowTotali=document.createElement("tr");
-                var td=document.createElement("td");
-                td.setAttribute("colspan","4");
-                td.innerHTML="TOTALI";
-                rowTotali.appendChild(td);
-                var td=document.createElement("td");
-                td.innerHTML=totaliKit.qnt;
-                rowTotali.appendChild(td);
-                var td=document.createElement("td");
-                td.innerHTML=totaliKit.mq;
-                rowTotali.appendChild(td);
-                var td=document.createElement("td");
-                td.innerHTML=totaliKit.mq_totali;
-                rowTotali.appendChild(td);
-                thead.appendChild(rowTotali);
-
-                var spaceRow=document.createElement("tr");
-                thead.appendChild(spaceRow);
-
-                var newRow=document.createElement("tr");
-                var ths=headerRow.getElementsByTagName("th");
-                for (let index = 0; index < ths.length; index++)
-                {
-                    const th = ths[index];
-                    var td=document.createElement("td");
-                    td.innerHTML=th.innerHTML;
-                    newRow.appendChild(td);
-                }
-                headerRow.remove();
-                thead.appendChild(newRow);
-
-                var kitTableString="<html>"+kitTable.outerHTML+"</html>";
-                
-                var blob;
-                var wb = {SheetNames:[], Sheets:{}};
-                
-                var codiciString="<tr><td>"+codici.join("</td><tr><td>");
-                codiciString += "</td></tr>";
-                var ws0 = XLSX.read("<html><table>"+codiciString+"</table></html>", {type:"binary"}).Sheets.Sheet1;
-                wb.SheetNames.push("Cabine"); 
-                wb.Sheets["Cabine"] = ws0;
-
-                var ws1 = XLSX.read(pannelliTableString, {type:"binary"}).Sheets.Sheet1;
-                wb.SheetNames.push("Pannelli"); 
-                wb.Sheets["Pannelli"] = ws1;
-
-                var ws2 = XLSX.read(kitTableString, {type:"binary"}).Sheets.Sheet1;
-                wb.SheetNames.push("Kit"); 
-                wb.Sheets["Kit"] = ws2;
-
-                blob = new Blob([s2ab(XLSX.write(wb, {bookType:'xlsx', type:'binary'}))],
-                {
-                    type: "application/octet-stream"
+                Swal.fire
+                ({
+                    title: "Caricamento in corso... ",
+                    background:"transparent",
+                    html: '<i style="color:white" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+                    showConfirmButton:false,
+                    showCloseButton:false,
+                    allowEscapeKey:false,
+                    allowOutsideClick:false,
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
                 });
 
-                saveAs(blob, fileName+".xlsx");
-
-                stepsPannelli=oldStepsPannelli;
-                getTablePannelli();
-                stepsKit=oldStepsKit;
-                getTableKit();
+                setTimeout(function(){
+                    oldStepsPannelli=stepsPannelli;
+                    stepsPannelli=pannelli.length;
+                    getTablePannelli();
+                    oldStepsKit=stepsKit;
+                    stepsKit=kit.length;
+                    getTableKit();
+    
+                    var pannelliTable=document.getElementById("pannelliTable").cloneNode(true)
+    
+                    var headerRow=pannelliTable.getElementsByTagName("thead")[0].getElementsByTagName("tr")[0];
+                    var thead=pannelliTable.getElementsByTagName("thead")[0];
+    
+                    var rowTotali=document.createElement("tr");
+                    var td=document.createElement("td");
+                    if(mostraCodiciCabina)
+                        td.setAttribute("colspan","6");
+                    else
+                        td.setAttribute("colspan","5");
+                    td.innerHTML="TOTALI";
+                    rowTotali.appendChild(td);
+                    var td=document.createElement("td");
+                    if(mostraCodiciCabina)
+                        td.setAttribute("colspan","3");
+                    else
+                        td.setAttribute("colspan","2");
+                    td.innerHTML=totaliPannelli.qnt;
+                    rowTotali.appendChild(td);
+                    var td=document.createElement("td");
+                    td.innerHTML=totaliPannelli.mq;
+                    rowTotali.appendChild(td);
+                    var td=document.createElement("td");
+                    td.innerHTML=totaliPannelli.mq_totali;
+                    rowTotali.appendChild(td);
+                    var td=document.createElement("td");
+                    td.innerHTML=totaliPannelli.forati;
+                    rowTotali.appendChild(td);
+                    thead.appendChild(rowTotali);
+    
+                    var spaceRow=document.createElement("tr");
+                    thead.appendChild(spaceRow);
+    
+                    var newRow=document.createElement("tr");
+                    var ths=headerRow.getElementsByTagName("th");
+                    for (let index = 0; index < ths.length; index++)
+                    {
+                        const th = ths[index];
+                        var td=document.createElement("td");
+                        td.innerHTML=th.innerHTML;
+                        newRow.appendChild(td);
+                    }
+                    headerRow.remove();
+                    thead.appendChild(newRow);
+    
+                    var pannelliTableString="<html>"+pannelliTable.outerHTML+"</html>";
+    
+                    var kitTable=document.getElementById("kitTable").cloneNode(true)
+    
+                    var headerRow=kitTable.getElementsByTagName("thead")[0].getElementsByTagName("tr")[0];
+                    var thead=kitTable.getElementsByTagName("thead")[0];
+    
+                    var rowTotali=document.createElement("tr");
+                    var td=document.createElement("td");
+                    td.setAttribute("colspan","4");
+                    td.innerHTML="TOTALI";
+                    rowTotali.appendChild(td);
+                    var td=document.createElement("td");
+                    td.innerHTML=totaliKit.qnt;
+                    rowTotali.appendChild(td);
+                    var td=document.createElement("td");
+                    td.innerHTML=totaliKit.mq;
+                    rowTotali.appendChild(td);
+                    var td=document.createElement("td");
+                    td.innerHTML=totaliKit.mq_totali;
+                    rowTotali.appendChild(td);
+                    thead.appendChild(rowTotali);
+    
+                    var spaceRow=document.createElement("tr");
+                    thead.appendChild(spaceRow);
+    
+                    var newRow=document.createElement("tr");
+                    var ths=headerRow.getElementsByTagName("th");
+                    for (let index = 0; index < ths.length; index++)
+                    {
+                        const th = ths[index];
+                        var td=document.createElement("td");
+                        td.innerHTML=th.innerHTML;
+                        newRow.appendChild(td);
+                    }
+                    headerRow.remove();
+                    thead.appendChild(newRow);
+    
+                    var kitTableString="<html>"+kitTable.outerHTML+"</html>";
+                    
+                    var blob;
+                    var wb = {SheetNames:[], Sheets:{}};
+                    
+                    var codiciString="<tr><td>"+codici.join("</td><tr><td>");
+                    codiciString += "</td></tr>";
+                    var ws0 = XLSX.read("<html><table>"+codiciString+"</table></html>", {type:"binary"}).Sheets.Sheet1;
+                    wb.SheetNames.push("Cabine"); 
+                    wb.Sheets["Cabine"] = ws0;
+    
+                    var ws1 = XLSX.read(pannelliTableString, {type:"binary"}).Sheets.Sheet1;
+                    wb.SheetNames.push("Pannelli"); 
+                    wb.Sheets["Pannelli"] = ws1;
+    
+                    var ws2 = XLSX.read(kitTableString, {type:"binary"}).Sheets.Sheet1;
+                    wb.SheetNames.push("Kit"); 
+                    wb.Sheets["Kit"] = ws2;
+    
+                    blob = new Blob([s2ab(XLSX.write(wb, {bookType:'xlsx', type:'binary'}))],
+                    {
+                        type: "application/octet-stream"
+                    });
+    
+                    saveAs(blob, fileName+".xlsx");
+    
+                    stepsPannelli=oldStepsPannelli;
+                    getTablePannelli();
+                    stepsKit=oldStepsKit;
+                    getTableKit();
+    
+                    swal.close();
+                }, 1500);
             }
             else
                 swal.close();
