@@ -25,9 +25,9 @@
 						<i class="fad fa-file-import"></i>
 						<div>Importa dati</div>
 					</div>
-					<div class="homepageLink" data-tooltip="Calcolo superficie" onclick="gotopath('calcoloSuperficiePannello.php')">
-						<i class="fad fa-ruler-combined"></i>
-						<div>Calcolo superficie pannello</div>
+					<div class="homepageLink" data-tooltip="Gestione Utenti" onclick="gotopath('gestioneUtenti.php')">
+						<i class="fad fa-users-cog"></i>
+						<div>Gestione Utenti</div>
 					</div>
 				</div>
 				<div id="statisticheSwContainer"></div>

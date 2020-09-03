@@ -20,6 +20,7 @@
 		<div class="reusable-control-bar" id="actionBarCloudFoto">
             <div class="rcb-input-icon-container" id="textareaElencoCodiciCabinaContainer">
                 <textarea id="textareaElencoCodiciCabina" placeholder="Incolla un elenco di codici..." ></textarea>
+				<button class="fal fa-times" onclick="document.getElementById('textareaElencoCodiciCabina').value=''" style="margin-right:0px;color:gray;font-size:18px" id="btnCheckCodiciCabina" ></button>
                 <button class="fad fa-search" onclick="checkCodiciCabina()" id="btnCheckCodiciCabina" ></button>
             </div>
             <button class="rcb-button-text-icon" onclick="esportaExcel()">

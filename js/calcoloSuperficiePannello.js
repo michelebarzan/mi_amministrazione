@@ -20,6 +20,8 @@ function checkCodiciCabina()
     var value=textarea.value;
     if(value!="")
     {
+		//value=value.replace(" ","");
+		value=value.replace(/ /g,"");
         codiciD=value.split("\n");
         codici = cleanArray(codiciD);
         var outerContainer=document.createElement("div");
@@ -198,7 +200,7 @@ async function printInfoSuperficiePannello()
 
     var row=document.createElement("div");
     row.setAttribute("class","calcolo-superficie-row");
-    row.setAttribute("style","height:100%;min-height:100%;max-height:100%");
+    row.setAttribute("style","height:calc(100% - 25px);min-height:calc(100% - 25px);max-height:calc(100% - 25px)");
 
     var tablePannelliContainer=document.createElement("div");
     tablePannelliContainer.setAttribute("id","tablePannelliContainer");
@@ -222,8 +224,11 @@ function checkCabineNonTrovate()
     cabineNonTrovate=[];
     codici.forEach(function(codice)
     {
+		
         if(!cabineTrovate.includes(codice))
+		{
             cabineNonTrovate.push(codice);
+		}
     });
     if(cabineNonTrovate.length>0)
     {
@@ -306,11 +311,11 @@ function getTablePannelli()
             },
             {
                 value:"mq",
-                label:"M.Q."
+                label:"M.Q. (netti)"
             },
             {
                 value:"mq_totali",
-                label:"M.Q. totali"
+                label:"M.Q. totali (netti)"
             },
             {
                 value:"forati",
@@ -352,11 +357,11 @@ function getTablePannelli()
             },
             {
                 value:"mq",
-                label:"M.Q."
+                label:"M.Q. (netti)"
             },
             {
                 value:"mq_totali",
-                label:"M.Q. totali"
+                label:"M.Q. totali (netti)"
             },
             {
                 value:"forati",
@@ -583,6 +588,7 @@ function getInfoSuperficiePannello()
         },
         function(response, status)
         {
+			//console.log(response);
             if(status=="success")
             {
                 if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)

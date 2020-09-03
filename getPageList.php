@@ -9,7 +9,7 @@
 
     $qPreferiti="SELECT mi_webapp.dbo.pagine_preferite_utenti.id_pagina_preferita_utente, mi_webapp.dbo.pagine_preferite_utenti.utente, mi_webapp.dbo.elenco_pagine.id_pagina, mi_webapp.dbo.elenco_pagine.pagina, mi_webapp.dbo.elenco_pagine.nomePagina, mi_webapp.dbo.elenco_pagine.applicazione, mi_webapp.dbo.elenco_pagine.icona
                 FROM mi_webapp.dbo.pagine_preferite_utenti INNER JOIN mi_webapp.dbo.elenco_pagine ON mi_webapp.dbo.pagine_preferite_utenti.pagina = mi_webapp.dbo.elenco_pagine.id_pagina
-                WHERE (mi_webapp.dbo.pagine_preferite_utenti.utente = ".$_SESSION['id_utente'].") AND (mi_webapp.dbo.elenco_pagine.applicazione = 'mi_amministrazione')";
+                WHERE (mi_webapp.dbo.pagine_preferite_utenti.utente = ".$_SESSION['id_utente'].") AND (mi_webapp.dbo.elenco_pagine.applicazione = 6)";
     $rPreferiti=sqlsrv_query($conn,$qPreferiti);
     if($rPreferiti==FALSE)
     {
@@ -57,7 +57,7 @@
                             (SELECT elenco_pagine_1.id_pagina
                                 FROM dbo.pagine_preferite_utenti INNER JOIN
                                                         dbo.elenco_pagine AS elenco_pagine_1 ON dbo.pagine_preferite_utenti.pagina = elenco_pagine_1.id_pagina
-                                WHERE (dbo.pagine_preferite_utenti.utente = ".$_SESSION['id_utente'].") AND (elenco_pagine_1.applicazione = 'mi_amministrazione'))) AND (dbo.applicazioni.nomeApplicazione = 'mi_amministrazione')";
+                                WHERE (dbo.pagine_preferite_utenti.utente = ".$_SESSION['id_utente'].") AND (elenco_pagine_1.applicazione = 6))) AND (dbo.applicazioni.id_applicazione = 6)";
             $rPagine=sqlsrv_query($conn,$qPagine);
             if($rPagine==FALSE)
             {

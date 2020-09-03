@@ -35,7 +35,7 @@
                                                                 dbo.kitpan ON dbo.kit.CODKIT = dbo.kitpan.CODKIT INNER JOIN
                                                                 dbo.pannelli ON dbo.kitpan.CODELE = dbo.pannelli.CODPAS INNER JOIN
                                                                 dbo.pannellil ON dbo.pannelli.CODLAM = dbo.pannellil.CODPAN ON dbo.cabine.CODCAB = dbo.cabkit.CODCAB) AS derivedtbl_1
-            GROUP BY db, CODCAB,CODELE, LUNG1, LUNG2, HALT, FORI, ANG, (LUNG1 + LUNG2) * HALT / 1000000) AS derivedtbl_2 OPTION ( QUERYTRACEON 9481 )";
+            GROUP BY db, CODCAB,CODELE, LUNG1, LUNG2, HALT, FORI, ANG, (LUNG1 + LUNG2) * HALT / 1000000) AS derivedtbl_2  OPTION ( QUERYTRACEON 9481 )";
     }
     else
     {
@@ -50,13 +50,13 @@
                                                                 dbo.kitpan ON dbo.kit.CODKIT = dbo.kitpan.CODKIT INNER JOIN
                                                                 dbo.pannelli ON dbo.kitpan.CODELE = dbo.pannelli.CODPAS INNER JOIN
                                                                 dbo.pannellil ON dbo.pannelli.CODLAM = dbo.pannellil.CODPAN ON dbo.cabine.CODCAB = dbo.cabkit.CODCAB) AS derivedtbl_1
-            GROUP BY db, CODELE, LUNG1, LUNG2, HALT, FORI, ANG, (LUNG1 + LUNG2) * HALT / 1000000) AS derivedtbl_2 OPTION ( QUERYTRACEON 9481 )";
+            GROUP BY db, CODELE, LUNG1, LUNG2, HALT, FORI, ANG, (LUNG1 + LUNG2) * HALT / 1000000) AS derivedtbl_2  OPTION ( QUERYTRACEON 9481 )";
     }
     
     $rPannelli=sqlsrv_query($conn,$qPannelli);
     if($rPannelli==FALSE)
     {
-        die("error");
+        die("error\n\n".$qPannelli."\n\n".print_r(sqlsrv_errors(),TRUE));
     }
     else
     {
@@ -97,8 +97,8 @@
                 FROM dbo.cabkit INNER JOIN
                                         dbo.kit ON dbo.cabkit.CODKIT = dbo.kit.CODKIT RIGHT OUTER JOIN
                                             ($subquery) AS elenco_cabine INNER JOIN
-                                        dbo.cabine AS cabine_1 ON elenco_cabine.CODCAB = cabine_1.CODCAB ON dbo.cabkit.CODCAB = cabine_1.CODCAB) AS derivedtbl_1
-            GROUP BY db,CODCAB, CODKIT, kit_halt, kit_lung, kit_halt * kit_lung / 1000000 OPTION ( QUERYTRACEON 9481 )";
+                                        dbo.cabine AS cabine_1 ON elenco_cabine.codcab = cabine_1.CODCAB ON dbo.cabkit.CODCAB = cabine_1.CODCAB) AS derivedtbl_1
+            GROUP BY db,CODCAB, CODKIT, kit_halt, kit_lung, kit_halt * kit_lung / 1000000  OPTION ( QUERYTRACEON 9481 )";
     }
     else
     {
@@ -107,14 +107,14 @@
                 FROM dbo.cabkit INNER JOIN
                                         dbo.kit ON dbo.cabkit.CODKIT = dbo.kit.CODKIT RIGHT OUTER JOIN
                                             ($subquery) AS elenco_cabine INNER JOIN
-                                        dbo.cabine AS cabine_1 ON elenco_cabine.CODCAB = cabine_1.CODCAB ON dbo.cabkit.CODCAB = cabine_1.CODCAB) AS derivedtbl_1
-            GROUP BY db, CODKIT, kit_halt, kit_lung, kit_halt * kit_lung / 1000000 OPTION ( QUERYTRACEON 9481 )";
-    }
+                                        dbo.cabine AS cabine_1 ON elenco_cabine.codcab = cabine_1.CODCAB ON dbo.cabkit.CODCAB = cabine_1.CODCAB) AS derivedtbl_1
+            GROUP BY db, CODKIT, kit_halt, kit_lung, kit_halt * kit_lung / 1000000  OPTION ( QUERYTRACEON 9481 )";
+    }//echo "||||".$subquery."||||";
     
     $rKit=sqlsrv_query($conn,$qKit);
     if($rKit==FALSE)
     {
-        die("error");
+        die("error".$qKit);
     }
     else
     {
@@ -159,11 +159,11 @@
                                                                                                 dbo.kitpan ON kit_1.CODKIT = dbo.kitpan.CODKIT INNER JOIN
                                                                                                 dbo.pannelli ON dbo.kitpan.CODELE = dbo.pannelli.CODPAS INNER JOIN
                                                                                                 dbo.pannellil ON dbo.pannelli.CODLAM = dbo.pannellil.CODPAN ON dbo.cabine.CODCAB = cabkit_1.CODCAB) AS derivedtbl_1_1
-                                            GROUP BY db, CODCAB, CODELE, LUNG1, LUNG2, HALT, FORI, ANG, (LUNG1 + LUNG2) * HALT / 1000000) AS derivedtbl_2) AS derivedtbl_3 OPTION ( QUERYTRACEON 9481 )";
+                                            GROUP BY db, CODCAB, CODELE, LUNG1, LUNG2, HALT, FORI, ANG, (LUNG1 + LUNG2) * HALT / 1000000) AS derivedtbl_2) AS derivedtbl_3  OPTION ( QUERYTRACEON 9481 )";
     $rCabine=sqlsrv_query($conn,$qCabine);
     if($rCabine==FALSE)
     {
-        die("error");
+        die("error".$qCabine);
     }
     else
     {
