@@ -21,9 +21,9 @@
 						<i class="fad fa-home"></i>
 						<div>Homepage</div>
 					</div>
-					<div class="homepageLink" data-tooltip="Importa dati" onclick="gotopath('importaDati.php')">
-						<i class="fad fa-file-import"></i>
-						<div>Importa dati</div>
+					<div class="homepageLink" data-tooltip="Gestione Database" onclick="gotopath('importaDati.php')">
+						<i class="fad fa-database"></i>
+						<div>Gestione Database</div>
 					</div>
 					<div class="homepageLink" data-tooltip="Gestione Utenti" onclick="gotopath('gestioneUtenti.php')">
 						<i class="fad fa-users-cog"></i>
