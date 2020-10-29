@@ -2,7 +2,7 @@
 <?php
 
     ini_set('memory_limit', '-1');
-    set_time_limit(90000);
+    set_time_limit(0);
 
     $databases=json_decode($_REQUEST["JSONdatabases"]);
 
@@ -144,7 +144,7 @@
                 $r7=sqlsrv_query($conn,$q7);
                 if($r7==FALSE)
                 {
-                    die("error1: ".$q7);
+                    die("error1000: ".$q7."--".print_r(sqlsrv_errors(),TRUE));
                 }
                 else
                 {

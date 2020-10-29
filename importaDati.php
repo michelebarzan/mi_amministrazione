@@ -28,6 +28,8 @@
 			<!--<button class="rcb-button-text-icon" id="bntImportaTutto" onclick="importaTutto(this)"><span>Importa tutti i database</span><i style="margin-left:10px" class="fad fa-upload"></i></button>-->
 			<button class="rcb-button-text-icon" id="bntImportaSingoloDatabase" onclick="getPopupScegliDatabase(this)"><span>Importa database txt</span><i style="margin-left:10px" class="fad fa-file-upload"></i></button>
 			<button class="rcb-button-text-icon" id="bntImportaDatabaseSql" onclick="getPopupImportaDatabase(this)"><span>Importa database sql</span><i style="margin-left:10px" class="fad fa-database"></i></button>
+			<button class="rcb-button-text-icon" id="bntImportaSingoloDatabase" onclick="getPopupSvuotaDatabaseTxt(this)"><span>Svuota database txt</span><i style="margin-left:10px" class="fad fa-eraser"></i></button>
+			<button class="rcb-button-text-icon" id="bntImportaDatabaseSql" onclick="getPopupSvuotaDatabaseSql(this)"><span>Svuota database sql</span><i style="margin-left:10px" class="fad fa-eraser"></i></button>
 			<button class="rcb-button-text-icon" id="bntAggiornaAnagrafiche" onclick="getPopupAggiornaAnagrafiche(this)"><span>Aggiorna anagrafiche</span><i style="margin-left:10px" class="fad fa-edit"></i></button>
 			<button class="rcb-button-text-icon" id="bntSvuotaDistinte" onclick="getPopupSvuotaDistinte(this)"><span>Svuota distinte</span><i style="margin-left:10px" class="fad fa-eraser"></i></button>
 			<button class="rcb-button-text-icon" id="bntMateriePrime" onclick="getTabellaMateriePrime(this)"><span>Materie prime</span><i style="margin-left:10px" class="fal fa-table"></i></button>

@@ -503,6 +503,9 @@ html
     border-top: 1px solid #ddd;
     margin-top:10px;
     margin-bottom: 5px;
+    max-height: 700px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 .importazione-mi-bd-tecnico-row
 {
@@ -529,6 +532,7 @@ html
     align-items: center;
     justify-content: center;
     height: 30px;
+    min-height: 30px;
     border-radius: 4px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     color:white;

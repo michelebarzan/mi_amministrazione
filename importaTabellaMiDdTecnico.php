@@ -13,35 +13,14 @@
 
     $result["tabella"]=$tabella;
 
-$dbs=["Spareti","Grimaldi","po00","Beb"/*,"newpan"*/];
+    $dbs=["Spareti","newpan","Grimaldi","po00","Beb"];
 
     foreach ($dbs as $db)
     {
         switch ($tabella) 
         {
-            case "materie_prime" :/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                /*$q="INSERT INTO [dbo].[materie_prime]([codice_materia_prima],[descrizione],[um],[peso],[note]) SELECT codice, descrizione, um, peso, note FROM $db.dbo.anagrafica_elementi WHERE (codice NOT IN(SELECT codice_materia_prima FROM dbo.materie_prime))";
-                $r=sqlsrv_query($conn,$q);
-                $result["query_".$db]=$q;
-                if($r==FALSE)
-                {
-                    $result["result_".$db]="error";
-                    $result["rows_".$db]=0;
-                }
-                else
-                {
-                    $result["result_".$db]="ok";
-                    $rows = sqlsrv_rows_affected( $r);
-                    if( $rows === false)
-                        $result["rows_".$db]=false;
-                    elseif( $rows == -1)
-                        $result["rows_".$db]=false;
-                    else
-                        $result["rows_".$db]=$rows;
-                }*/
-            break;
             case "cesoiati" :/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                $q="INSERT INTO [dbo].[cesoiati] ([codice_cesoiato],[descrizione],[finitura],[lung],[halt],[spess],[mmq],[um],[id_materia_prima]) SELECT $db.dbo.cesoiati.CODCES, $db.dbo.cesoiati.DESCRIZIONE, $db.dbo.cesoiati.FINITURA, $db.dbo.cesoiati.LUNG, $db.dbo.cesoiati.HALT, $db.dbo.cesoiati.SPESS,  $db.dbo.cesoiati.MQ, $db.dbo.cesoiati.UM, dbo.materie_prime.id_materia_prima FROM $db.dbo.cesoiati INNER JOIN $db.dbo.DIBces ON $db.dbo.cesoiati.CODCES = $db.dbo.DIBces.CODCES INNER JOIN dbo.materie_prime ON $db.dbo.DIBces.CODMAT = dbo.materie_prime.codice_materia_prima WHERE ($db.dbo.cesoiati.CODCES NOT IN (SELECT codice_cesoiato FROM dbo.cesoiati AS cesoiati_1))";
+                $q="INSERT INTO [dbo].[cesoiati] ([codice_cesoiato],[descrizione],[finitura],[lung],[halt],[spess],[mmq],[um],[id_materia_prima]) SELECT cesoiati_db.CODCES, cesoiati_db.DESCRIZIONE, cesoiati_db.FINITURA, cesoiati_db.LUNG, cesoiati_db.HALT, cesoiati_db.SPESS, cesoiati_db.MQ, cesoiati_db.UM,  dbo.materie_prime.id_materia_prima FROM (SELECT CODCES, DESCRIZIONE, FINITURA, LUNG, HALT, SPESS, MQ, UM, { fn CONCAT('materiale finitura ', FINITURA) } AS codice_materia_prima FROM $db.dbo.cesoiati AS cesoiati_1) AS cesoiati_db INNER JOIN dbo.materie_prime ON cesoiati_db.codice_materia_prima = dbo.materie_prime.codice_materia_prima WHERE (cesoiati_db.CODCES NOT IN (SELECT codice_cesoiato FROM dbo.cesoiati AS cesoiati_1))";
                 $r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)
@@ -273,7 +252,7 @@ $dbs=["Spareti","Grimaldi","po00","Beb"/*,"newpan"*/];
                 }
             break;
             case "rinforzi_piede" :/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                $q="INSERT INTO [dbo].[rinforzi_piede] ([codice_rinforzo_piede],[descrizione],[um],[id_materia_prima],[qnt]) SELECT $db.dbo.rinfpiede.CODRIP, $db.dbo.rinfpiede.DESCRIZIONE, $db.dbo.rinfpiede.UM, dbo.materie_prime.id_materia_prima, $db.dbo.rinfpiede.QNT FROM $db.dbo.rinfpiede INNER JOIN dbo.materie_prime ON $db.dbo.rinfpiede.CODMAT = dbo.materie_prime.codice_materia_prima WHERE ($db.dbo.rinfpiede.CODRIP NOT IN (SELECT $db.dbo.rinfpiede.CODRIP FROM dbo.rinforzi_piede))";
+                $q="INSERT INTO [dbo].[rinforzi_piede] ([codice_rinforzo_piede],[descrizione],[um],[id_materia_prima],[qnt]) SELECT $db.dbo.rinfpiede.CODRIP, $db.dbo.rinfpiede.DESCRIZIONE, $db.dbo.rinfpiede.UM, dbo.materie_prime.id_materia_prima, $db.dbo.rinfpiede.QNT FROM $db.dbo.rinfpiede INNER JOIN dbo.materie_prime ON $db.dbo.rinfpiede.CODMAT = dbo.materie_prime.codice_materia_prima WHERE ($db.dbo.rinfpiede.CODRIP NOT IN (SELECT codice_rinforzo_piede FROM dbo.rinforzi_piede))";
                 $r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)
@@ -294,10 +273,7 @@ $dbs=["Spareti","Grimaldi","po00","Beb"/*,"newpan"*/];
                 }
             break;
             case "pannelli" :/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                $ce="";
-                /*if($db=="newpan")
-                    $ce=" OPTION ( QUERYTRACEON 9481 )";*/
-                $q="INSERT INTO [dbo].[pannelli] ([codice_pannello],[descrizione],[resis],[um],[righe],[descrizionetec],[finitura],[halt],[fori],[id_lamiera],[importazione]) SELECT $db.dbo.pannelli.CODPAS, $db.dbo.pannelli.DESCRIZIONE, $db.dbo.pannelli.RESIS, $db.dbo.pannelli.UM, $db.dbo.pannelli.RIGHE, $db.dbo.pannelli.DESCRIZIONETEC,  $db.dbo.pannelli.FINITURA, $db.dbo.pannelli.HALT, $db.dbo.pannelli.FORI, dbo.lamiere.id_lamiera, 'in_corso' FROM $db.dbo.pannelli INNER JOIN dbo.lamiere ON $db.dbo.pannelli.CODLAM = dbo.lamiere.codice_lamiera WHERE ($db.dbo.pannelli.CODPAS NOT IN (SELECT codice_pannello FROM dbo.pannelli AS pannelli_1))$ce";
+                $q="INSERT INTO [dbo].[pannelli] ([codice_pannello],[descrizione],[resis],[um],[righe],[descrizionetec],[finitura],[halt],[fori],[id_lamiera],[importazione]) SELECT $db.dbo.pannelli.CODPAS, $db.dbo.pannelli.DESCRIZIONE, $db.dbo.pannelli.RESIS, $db.dbo.pannelli.UM, $db.dbo.pannelli.RIGHE, $db.dbo.pannelli.DESCRIZIONETEC,  $db.dbo.pannelli.FINITURA, $db.dbo.pannelli.HALT, $db.dbo.pannelli.FORI, dbo.lamiere.id_lamiera, 'in_corso' FROM $db.dbo.pannelli INNER JOIN dbo.lamiere ON $db.dbo.pannelli.CODLAM = dbo.lamiere.codice_lamiera WHERE ($db.dbo.pannelli.CODPAS NOT IN (SELECT codice_pannello FROM dbo.pannelli AS pannelli_1))";
                 $r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)
@@ -316,6 +292,9 @@ $dbs=["Spareti","Grimaldi","po00","Beb"/*,"newpan"*/];
                     else
                         $result["rows_".$db]=$rows;
                 }
+                /*$result["query_".$db]="";
+                $result["result_".$db]="ok";
+                $result["rows_".$db]=0;*/
             break;
             case "kit" :/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
                 $q="INSERT INTO [dbo].[kit] ([codice_kit],[descrizione],[lung],[halt],[righe],[um],[finitura],[fori],[importazione]) SELECT CODKIT, DESCRIZIONE, LUNG, HALT, RIGHE, UM__, FINITURA, MaxDiFORI ,'in_corso' FROM $db.dbo.kit WHERE (CODKIT NOT IN (SELECT codice_kit FROM dbo.kit AS kit_1))";
@@ -381,7 +360,7 @@ $dbs=["Spareti","Grimaldi","po00","Beb"/*,"newpan"*/];
                 }
             break;
             case "carrelli" :/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                $q="INSERT INTO [dbo].[carrelli] ([codice_carrello],[descrizione],[mq],[peso],[sottoinsieme_corridoio],[um]) SELECT $db.dbo.carrelli.CODCAR, $db.dbo.carrelli.DESCRIZIONE, $db.dbo.carrelli.mq, $db.dbo.carrelli.peso, dbo.sottoinsiemi_corridoi.id_sottoinsieme_corridoio,  $db.dbo.carrelli.UM FROM $db.dbo.carrelli INNER JOIN $db.dbo.dibcar ON $db.dbo.carrelli.CODCAR = $db.dbo.dibcar.CODCAR INNER JOIN dbo.sottoinsiemi_corridoi ON $db.dbo.dibcar.NCAB = dbo.sottoinsiemi_corridoi.codice_sottoinsieme_corridoio WHERE ($db.dbo.carrelli.CODCAR NOT IN (SELECT codice_carrello FROM dbo.carrelli AS carrelli_1))";
+                $q="INSERT INTO [dbo].[carrelli] ([codice_carrello],[descrizione],[mq],[peso],[sottoinsieme_corridoio],[um],importazione) SELECT $db.dbo.carrelli.CODCAR, $db.dbo.carrelli.DESCRIZIONE, $db.dbo.carrelli.mq, $db.dbo.carrelli.peso, dbo.sottoinsiemi_corridoi.id_sottoinsieme_corridoio,  $db.dbo.carrelli.UM ,'in_corso' FROM $db.dbo.carrelli INNER JOIN $db.dbo.dibcar ON $db.dbo.carrelli.CODCAR = $db.dbo.dibcar.CODCAR INNER JOIN dbo.sottoinsiemi_corridoi ON $db.dbo.dibcar.NCAB = dbo.sottoinsiemi_corridoi.codice_sottoinsieme_corridoio WHERE ($db.dbo.carrelli.CODCAR NOT IN (SELECT codice_carrello FROM dbo.carrelli AS carrelli_1))";
                 $r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)
@@ -718,6 +697,27 @@ $dbs=["Spareti","Grimaldi","po00","Beb"/*,"newpan"*/];
             break;
             case "pannelli_kit" :/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
                 $q="INSERT INTO [dbo].[pannelli_kit] ([id_kit],[id_pannello],[qnt],[posx],[posy]) SELECT kit.id_kit, dbo.pannelli.id_pannello, $db.dbo.kitpan.QNT, $db.dbo.kitpan.POSX, $db.dbo.kitpan.POSY FROM dbo.pannelli INNER JOIN $db.dbo.kitpan ON dbo.pannelli.codice_pannello = $db.dbo.kitpan.CODELE INNER JOIN (SELECT id_kit, codice_kit, descrizione, lung, halt, righe, um, finitura, fori, importazione FROM dbo.kit AS kit_1 WHERE (importazione = 'in_corso')) AS kit ON $db.dbo.kitpan.CODKIT = kit.codice_kit";
+                $r=sqlsrv_query($conn,$q);
+                $result["query_".$db]=$q;
+                if($r==FALSE)
+                {
+                    $result["result_".$db]="error";
+                    $result["rows_".$db]=0;
+                }
+                else
+                {
+                    $result["result_".$db]="ok";
+                    $rows = sqlsrv_rows_affected( $r);
+                    if( $rows === false)
+                        $result["rows_".$db]=false;
+                    elseif( $rows == -1)
+                        $result["rows_".$db]=false;
+                    else
+                        $result["rows_".$db]=$rows;
+                }
+            break;
+            case "lane_ceramiche_pannelli" :/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+                $q="INSERT INTO [dbo].[lane_ceramiche_pannelli] ([id_pannello],[id_lana_ceramica],[qnt],[posx],[posy],[dimx],[dimy]) SELECT pannelli.id_pannello, dbo.lane_ceramiche.id_lana_ceramica, $db.dbo.DIBpaS.QNT, $db.dbo.DIBpaS.POSX, $db.dbo.DIBpaS.POSY, $db.dbo.DIBpaS.DIMX, $db.dbo.DIBpaS.DIMY FROM $db.dbo.DIBpaS INNER JOIN (SELECT id_pannello, codice_pannello, descrizione, resis, um, righe, descrizionetec, finitura, halt, fori, utente, id_lamiera, importazione FROM dbo.pannelli AS pannelli_1 WHERE (importazione = 'in_corso')) AS pannelli ON $db.dbo.DIBpaS.CODPAS = pannelli.codice_pannello INNER JOIN dbo.lane_ceramiche ON $db.dbo.DIBpaS.CODELE = dbo.lane_ceramiche.codice_lana_ceramica";
                 $r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)

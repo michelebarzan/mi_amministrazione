@@ -1,5 +1,6 @@
 var databases;
 var tabelleCheckboxesAggiornaAnagrafiche=[];
+var errorMessages=[];
 
 window.addEventListener("load", async function(event)
 {
@@ -158,7 +159,7 @@ function closePopupScegliDatabase()
 {
     $("#selectScegliDatabase").hide(50,"swing");
 }
-async function getSelectsScegliDatabase()
+/*async function getSelectsScegliDatabase()
 {
     var selected=[]
 
@@ -206,7 +207,340 @@ async function getSelectsScegliDatabase()
         //button.disabled=false;
         icon.className="fad fa-file-upload";
     }
-    
+}*/
+async function getSelectsScegliDatabase()
+{
+    var selected=[]
+
+    var options=document.getElementsByClassName("custom-select-option");
+    for (let index = 0; index < options.length; index++) 
+    {
+        const option = options[index];
+        var checked=option.getAttribute("checked")=="true";
+        if(checked)
+            selected.push(option.value);
+    }
+
+    closePopupScegliDatabase();
+
+    if(selected.length==0)
+    {
+        Swal.fire({icon:"error",title: "Nessun database selezionato",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+    }
+    else
+    {
+        databases=selected;
+
+        var outerContainer=document.createElement("div");
+        outerContainer.setAttribute("class","importazione-mi-bd-tecnico-outer-container");
+        outerContainer.setAttribute("id","importazioneMiDdTecnicoOuterContainer");
+
+        Swal.fire
+        ({
+            title: "Importazione database ("+databases.join(',')+")",
+            width: 550,
+            position:"top",
+            //html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+            html:outerContainer.outerHTML,
+            showConfirmButton:false,
+            showCloseButton:false,
+            allowEscapeKey:false,
+            allowOutsideClick:false,
+            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="black";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+        });
+
+        var tot_rows=0;
+        var tot_time_elapsed_secs=0;
+
+        var row=document.createElement("div");
+        row.setAttribute("class","importazione-mi-bd-tecnico-row");
+        row.setAttribute("id","result_row_aggiornamenti");
+
+        var span=document.createElement("span");
+        span.setAttribute("style","color:black;font-weight: bold;");
+        span.innerHTML="Aggiornamenti";
+        row.appendChild(span);
+
+        var span=document.createElement("span");
+        span.setAttribute("style","margin-left:auto");
+        span.setAttribute("id","result_span_aggiornamenti");
+        span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
+        row.appendChild(span);
+
+        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
+
+        var response=await aggiornamentiTabelleTxt(databases);
+        console.log(response);
+
+        if(response.result=="ok")
+            document.getElementById("result_span_aggiornamenti").innerHTML='<i style="color:#70B085;font-size:14px" class="fad fa-check-circle"></i>';
+        else
+            document.getElementById("result_span_aggiornamenti").innerHTML='<i style="color:#d43f3a;font-size:14px" class="fad fa-times-circle"></i>';
+        document.getElementById("result_span_aggiornamenti").style.marginLeft="5px";
+
+        var span=document.createElement("span");
+        span.setAttribute("style","margin-left:auto;font-size:12px");
+        span.innerHTML="<b>"+response.time_elapsed_secs+"</b> secondi";
+        document.getElementById("result_row_aggiornamenti").insertBefore(span,document.getElementById("result_span_aggiornamenti"));
+
+        tot_time_elapsed_secs+=parseFloat(response.time_elapsed_secs);
+        errorMessages=[];
+
+        var tabelle=['doghe','doghelm','doghelr','dogherf','doghex','pannellis','pesicab','soffitti','tabcolli','travinf','travsup','cabine','cabkit','kit','kitpan','pannelli','DIBpaS','pannellil','DIBpan','sviluppi','dibsvi','cesoiati','DIBces','mater','DIBldr','tabrinf','DIBrin','rinfpiede','DIBrinp','lanacer','DIBlcr','corridoi','dibcor','carrelli','dibcar','DIBlams','DIBldrs','DIBrind','DIBtri','DIBtrs','cab_colli','cabsof','dibdog'];
+
+        var result="ok";
+        for (let index = 0; index < tabelle.length; index++)
+        {
+            const tabella = tabelle[index];
+
+            var row=document.createElement("div");
+            row.setAttribute("class","importazione-mi-bd-tecnico-row");
+            row.setAttribute("id","result_row_"+tabella);
+
+            var span=document.createElement("span");
+            span.setAttribute("style","color:black;font-weight: bold;");
+            span.innerHTML=tabella;
+            row.appendChild(span);
+
+            var span=document.createElement("span");
+            span.setAttribute("style","margin-left:auto");
+            span.setAttribute("id","result_span_"+tabella);
+            span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
+            row.appendChild(span);
+
+            document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
+
+            var response=await importaTabellaTxt(tabella,databases);
+            console.log(response);
+            if(response.length==0 || response.result=="error")
+            {
+                document.getElementById("result_span_"+tabella).innerHTML='<i style="color:#d43f3a;font-size:14px" class="fad fa-times-circle"></i>';
+                document.getElementById("result_span_"+tabella).style.marginLeft="5px";
+
+                var span=document.createElement("span");
+                span.setAttribute("style","margin-left:auto;font-size:12px");
+                span.innerHTML="<b>0</b> righe inserite";
+                document.getElementById("result_row_"+tabella).insertBefore(span,document.getElementById("result_span_"+tabella));
+            }
+            else
+            {
+                if(response.errorMessages.length>0)
+                    errorMessages.push(response.errorMessages);
+
+                if(response.result=="ok")
+                    document.getElementById("result_span_"+tabella).innerHTML='<i style="color:#70B085;font-size:14px" class="fad fa-check-circle"></i>';
+                else
+                    document.getElementById("result_span_"+tabella).innerHTML='<i style="color:#d43f3a;font-size:14px" class="fad fa-times-circle"></i>';
+                document.getElementById("result_span_"+tabella).style.marginLeft="5px";
+
+                var span=document.createElement("span");
+                span.setAttribute("style","margin-left:auto;font-size:12px");
+                span.innerHTML="<b>"+response.rows+"</b> righe inserite in <b>"+response.time_elapsed_secs+"</b> secondi";
+                document.getElementById("result_row_"+tabella).insertBefore(span,document.getElementById("result_span_"+tabella));
+
+                tot_rows+=response.rows;
+                tot_time_elapsed_secs+=parseFloat(response.time_elapsed_secs);
+            }
+        }
+
+        tot_time_elapsed_secs=tot_time_elapsed_secs.toFixed(2);
+
+        var row=document.createElement("div");
+        row.setAttribute("class","importazione-mi-bd-tecnico-row");
+        row.setAttribute("id","result_row_operazioni_finali");
+
+        var span=document.createElement("span");
+        span.setAttribute("style","color:black;font-weight: bold;");
+        span.setAttribute("id","result_text_operazioni_finali");
+        row.appendChild(span);
+
+        var span=document.createElement("span");
+        span.setAttribute("style","margin-left:auto");
+        span.setAttribute("id","result_span_operazioni_finali");
+        row.appendChild(span);
+
+        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
+
+        document.getElementById("result_span_operazioni_finali").innerHTML='<i style="color:#70B085;font-size:14px" class="fad fa-check-circle"></i>';
+        document.getElementById("result_span_operazioni_finali").style.marginLeft="5px";
+
+        document.getElementById("result_text_operazioni_finali").innerHTML="Esito";
+
+        var span=document.createElement("span");
+        span.setAttribute("style","margin-left:auto;font-size:12px;color#4C91CB");
+        span.innerHTML="<b>"+tot_rows+"</b> righe inserite in <b>"+tot_time_elapsed_secs+"</b> secondi";
+        document.getElementById("result_row_operazioni_finali").insertBefore(span,document.getElementById("result_span_operazioni_finali"));
+
+        //console.log(errorMessages);
+
+        var row=document.createElement("div");
+        row.setAttribute("class","importazione-mi-bd-tecnico-row");
+        row.setAttribute("id","result_row_error_messages");
+
+        var span=document.createElement("span");
+        span.setAttribute("style","margin-left:auto");
+        span.setAttribute("id","result_span_error_messages");
+        row.appendChild(span);
+
+        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
+
+        if(errorMessages.length==0)
+                document.getElementById("result_span_error_messages").innerHTML='<i style="color:#70B085;font-size:14px" class="fad fa-check-circle"></i>';
+            else
+                document.getElementById("result_span_error_messages").innerHTML='<i style="color:#d43f3a;font-size:14px" class="fad fa-times-circle"></i>';
+            document.getElementById("result_span_error_messages").style.marginLeft="5px";
+
+        var span=document.createElement("span");
+        span.setAttribute("style","margin-left:auto;font-size:12px;color#4C91CB;text-decoration:underline;cursor:pointer");
+        span.setAttribute("title","Visualizza errori");
+        span.setAttribute("onclick","alertErrorMessages()");
+        span.innerHTML="Errori in <b>"+errorMessages.length+"</b> tabelle";
+        document.getElementById("result_row_error_messages").insertBefore(span,document.getElementById("result_span_error_messages"));
+
+        var button=document.createElement("button");
+        button.setAttribute("id","btnImportazioneMiDdTecnico");
+        button.setAttribute("onclick","Swal.close()");
+        button.innerHTML='<span>Chiudi</span>';
+
+        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(button);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
+
+        var JSONdatabases=JSON.stringify(databases);
+        $.post("inserisciLogImortazione.php",
+        {
+            risultato:result,
+            JSONdatabases
+        },
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                getElencoLogImportazioni();
+            }
+        });
+    }
+}
+function alertErrorMessages()
+{
+    var errorMessagesArray=[];
+    errorMessages.forEach(errorMessagesElement =>
+    {
+        errorMessagesElement.forEach(errorMessage =>
+        {
+            errorMessagesArray.push(errorMessage);
+        });
+    });
+
+    var ul=document.createElement("ul");
+    ul.setAttribute("style","text-align:left");
+
+    var li=document.createElement("li");
+
+    var b=document.createElement("b");
+    b.innerHTML="Errori: "+errorMessagesArray.length;
+    li.appendChild(b);
+
+    var div=document.createElement("div");
+    div.setAttribute("id","containerErroriImportazione");
+    div.setAttribute("style","display:block");
+    div.innerHTML="<br>"+errorMessagesArray.join('<br>')+"<br>";
+    li.appendChild(div);
+
+    ul.appendChild(li);
+
+    Swal.fire
+    ({
+        icon:"warning",
+        title: "Errori importazione ("+databases.join(',')+")",
+        html:ul.outerHTML,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+    });
+}
+function aggiornamentiTabelleTxt(databases)
+{
+    return new Promise(function (resolve, reject) 
+    {
+        var JSONdatabases=JSON.stringify(databases);
+        $.post("aggiornamentiTabelleTxt.php",
+        {
+            JSONdatabases
+        },
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                try {
+                    resolve(JSON.parse(response));
+                } catch (error) {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+            }
+            else
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+                resolve([]);
+            }
+        });
+    });
+}
+function getTabelleImportazioneTxt()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("getTabelleImportazioneTxt.php",
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                try {
+                    resolve(JSON.parse(response));
+                } catch (error) {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+            }
+            else
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+                resolve([]);
+            }
+        });
+    });
+}
+function importaTabellaTxt(tabella,databases)
+{
+    return new Promise(function (resolve, reject) 
+    {
+        var JSONdatabases=JSON.stringify(databases);
+        $.post("importaTabellaTxt.php",
+        {
+            tabella,
+            JSONdatabases
+        },
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                try {
+                    resolve(JSON.parse(response));
+                } catch (error) {
+                    //Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+            }
+            else
+            {
+                //Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+                resolve([]);
+            }
+        });
+    });
 }
 function checkResponseImportaDbTecnico(response)
 {
@@ -280,6 +614,15 @@ function logImortazione(risultato)
 }
 function checkOptionScegliDatabase(option)
 {
+    var options=document.getElementsByClassName("custom-select-option");
+    for (let index = 0; index < options.length; index++)
+    {
+        var element = options[index];
+        var checkbox_element=element.getElementsByClassName("custom-select-checkbox")[0];
+        checkbox_element.setAttribute("class","custom-select-item custom-select-checkbox fal fa-square");
+        element.setAttribute("checked","false");
+    }
+
     var checked=option.getAttribute("checked")=="true";
     var checkbox=option.getElementsByClassName("custom-select-checkbox")[0];
     if(checked)
@@ -761,7 +1104,7 @@ async function importaDatabase()
         span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
         row.appendChild(span);
 
-        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);
+        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 
         var response=await importaTabella(tabella);
         console.log(response);
@@ -799,7 +1142,7 @@ async function importaDatabase()
     span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
     row.appendChild(span);
 
-    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);
+    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 
     var response=await cleanColonnaImportazione();
     console.log(response);
@@ -819,7 +1162,7 @@ async function importaDatabase()
     button.setAttribute("onclick","Swal.close()");
     button.innerHTML='<span>Chiudi</span>';
 
-    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(button);
+    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(button);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 
     var JSONdatabases=JSON.stringify(["db_tecnico"]);
     $.post("inserisciLogImortazione.php",
@@ -1053,7 +1396,7 @@ async function aggiornaAnagrafiche(tabelle,run_importazione)
         span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
         row.appendChild(span);
 
-        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);
+        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 
         var response=await aggiornaAnagrafica(tabella);
         console.log(response);
@@ -1089,7 +1432,7 @@ async function aggiornaAnagrafiche(tabelle,run_importazione)
     span.setAttribute("id","result_span_operazioni_finali");
     row.appendChild(span);
 
-    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);
+    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 
     document.getElementById("result_span_operazioni_finali").innerHTML='<i style="color:#70B085;font-size:14px" class="fad fa-check-circle"></i>';
     document.getElementById("result_span_operazioni_finali").style.marginLeft="5px";
@@ -1115,7 +1458,7 @@ async function aggiornaAnagrafiche(tabelle,run_importazione)
         button.innerHTML='<span>Chiudi</span>';
     }
 
-    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(button);
+    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(button);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 }
 function aggiornaAnagrafica(tabella)
 {
@@ -1313,7 +1656,7 @@ async function svuotaDistinte(tabelle,run_importazione)
         span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
         row.appendChild(span);
 
-        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);
+        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 
         var response=await svuotaDistinta(tabella);
         console.log(response);
@@ -1356,7 +1699,7 @@ async function svuotaDistinte(tabelle,run_importazione)
     span.setAttribute("id","result_span_operazioni_finali");
     row.appendChild(span);
 
-    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);
+    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 
     document.getElementById("result_span_operazioni_finali").innerHTML='<i style="color:#70B085;font-size:14px" class="fad fa-check-circle"></i>';
     document.getElementById("result_span_operazioni_finali").style.marginLeft="5px";
@@ -1382,7 +1725,7 @@ async function svuotaDistinte(tabelle,run_importazione)
         button.innerHTML='<span>Chiudi</span>';
     }
 
-    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(button);
+    document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(button);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 }
 function updateColonnaImportazione(anagrafiche)
 {
@@ -1476,4 +1819,92 @@ function getTable(table,orderBy,orderType)
 function editableTableLoad()
 {
 
+}
+function getPopupSvuotaDatabaseTxt(button)
+{
+    button.disabled=true;
+    var icon=button.getElementsByTagName("i")[0];
+    icon.className="fad fa-spinner-third fa-spin";
+
+    Swal.fire
+    ({
+        title: "Eliminazione in corso...",
+        html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+        showConfirmButton:false,
+        showCloseButton:false,
+        allowEscapeKey:false,
+        allowOutsideClick:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+    });
+
+    $.post("svuotaDatabaseTxt.php",
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}});
+                console.log(response);
+            }
+            else
+            {
+                Swal.fire
+                ({
+                    icon:"success",
+                    showConfirmButton:false,
+                    showCloseButton:true,
+                    title: "Database txt svuotati",
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+                });
+            }
+        }
+    });
+
+    button.disabled=false;
+    icon.className="fad fa-eraser";
+}
+function getPopupSvuotaDatabaseSql(button)
+{
+    button.disabled=true;
+    var icon=button.getElementsByTagName("i")[0];
+    icon.className="fad fa-spinner-third fa-spin";
+
+    Swal.fire
+    ({
+        title: "Eliminazione in corso...",
+        html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+        showConfirmButton:false,
+        showCloseButton:false,
+        allowEscapeKey:false,
+        allowOutsideClick:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+    });
+
+    $.post("svuotaDatabaseSql.php",
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}});
+                console.log(response);
+            }
+            else
+            {
+                Swal.fire
+                ({
+                    icon:"success",
+                    showConfirmButton:false,
+                    showCloseButton:true,
+                    title: "Database sql svuotato",
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+                });
+            }
+        }
+    });
+
+    button.disabled=false;
+    icon.className="fad fa-eraser";
 }
