@@ -14,12 +14,12 @@
         while($row2=sqlsrv_fetch_array($result2))
         {
             $utente["id_utente"]=$row2['id_utente'];
-            $utente["username"]=$row2['username'];
-            $utente["nome"]=$row2['nome'];
-            $utente["cognome"]=$row2['cognome'];
+            $utente["username"]=utf8_encode($row2['username']);
+            $utente["nome"]=utf8_encode($row2['nome']);
+            $utente["cognome"]=utf8_encode($row2['cognome']);
             $utente["eliminato"]=$row2['eliminato'];
-            $utente["usernamePC"]=$row2['usernamePC'];
-            $utente["mail"]=$row2['mail'];
+            $utente["usernamePC"]=utf8_encode($row2['usernamePC']);
+            $utente["mail"]=utf8_encode($row2['mail']);
 
             array_push($utenti,$utente);
         }

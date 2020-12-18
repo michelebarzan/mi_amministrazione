@@ -11,16 +11,16 @@
 
     $result["result"]="ok";
 
-    foreach($databases as $database)
+    /*foreach($databases as $database)
     {
         include "connessioneDb.php";
 
-        /*if($database=="newpan")
-            $file_aggiornamenti = fopen("//marineinteriors.it/groupspaces/mi/Ut/PARETI/NEWPAN/regdef/aggiornamenti.txt", "r") or die("error");
+        if($database=="newpan")
+            $file_aggiornamenti = fopen("\\\\marineinteriors.it\\groupspaces\\mi\\Ut\\PARETI\\NEWPAN\\regdef\\aggiornamenti.txt", "r") or die("error");
         else
-            $file_aggiornamenti = fopen("//marineinteriors.it/groupspaces/mi/$database/regdef/aggiornamenti.txt", "r") or die("error");*/
+            $file_aggiornamenti = fopen("\\\\marineinteriors.it\\groupspaces\\mi\\".$database."\\regdef\\aggiornamenti.txt", "r") or die("error");
 
-        $file_aggiornamenti = fopen("C:/mi_db_tecnico/$database/regdef/aggiornamenti.txt", "r") or die("error");
+        //$file_aggiornamenti = fopen("C:/mi_db_tecnico/$database/regdef/aggiornamenti.txt", "r") or die("error");
         $rows_aggiornamenti=[];
         while(!feof($file_aggiornamenti))
         {
@@ -113,25 +113,25 @@
         }
         fclose($file_aggiornamenti);
 
-        /*if($database=="newpan")
+        if($database=="newpan")
             $file_aggiornamenti = @fopen("//marineinteriors.it/groupspaces/mi/Ut/PARETI/NEWPAN/regdef/aggiornamenti.txt", "r+") or die("error");
         else
-            $file_aggiornamenti = @fopen("//marineinteriors.it/groupspaces/mi/$database/regdef/aggiornamenti.txt", "r+") or die("error");*/
+            $file_aggiornamenti = @fopen("//marineinteriors.it/groupspaces/mi/$database/regdef/aggiornamenti.txt", "r+") or die("error");
         
-        $file_aggiornamenti = @fopen("C:/mi_db_tecnico/$database/regdef/aggiornamenti.txt", "r+") or die("error");
+        //$file_aggiornamenti = @fopen("C:/mi_db_tecnico/$database/regdef/aggiornamenti.txt", "r+") or die("error");
         if ($file_aggiornamenti !== false)
         {
             ftruncate($file_aggiornamenti, 0);
             fclose($file_aggiornamenti);
         }
-    }
+    }*/
 
     $time_elapsed_secs = microtime(true) - $start;
     $time_elapsed_secs = number_format($time_elapsed_secs,1);
 
     $result["time_elapsed_secs"]=$time_elapsed_secs;
 
-    $result["queries"]=$queries;
+    //$result["queries"]=$queries;
 
     echo json_encode($result);
 

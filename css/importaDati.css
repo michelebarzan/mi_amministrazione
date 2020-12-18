@@ -234,9 +234,9 @@ html
     margin-top: 10px;
     padding-left: 25px;
     padding-right: 25px;
-    margin-left: 25px;
+    /*margin-left: 25px;*/
     overflow: hidden;
-    margin-right: 25px;
+    /*margin-right: 25px;*/
     margin-bottom: 110px;
     max-height:calc(100% - calc( 110px + 20px + 31px + 50px + 20px)); 
     min-height:calc(100% - calc( 110px + 20px + 31px + 50px + 20px)); 
@@ -503,7 +503,7 @@ html
     border-top: 1px solid #ddd;
     margin-top:10px;
     margin-bottom: 5px;
-    max-height: 700px;
+    max-height: 600px;
     overflow-y: auto;
     overflow-x: hidden;
 }

@@ -198,7 +198,7 @@
 		}
 		function getPermessi($conn,$username,$appName) 
 		{
-			$q="SELECT nomePagina FROM permessi_pagine,elenco_pagine WHERE permessi_pagine.pagina=elenco_pagine.id_pagina AND applicazione='$appName' AND permesso='completo' AND utente=".getIdUtente($conn,$username);
+			$q="SELECT nomePagina FROM permessi_pagine,elenco_pagine WHERE permessi_pagine.pagina=elenco_pagine.id_pagina AND applicazione=(SELECT id_applicazione FROM mi_webapp.dbo.applicazioni WHERE nomeApplicazione='mi_ufficio_tecnico') AND permesso='completo' AND utente=".getIdUtente($conn,$username);
 			$r=sqlsrv_query($conn,$q);
 			if($r==FALSE)
 			{

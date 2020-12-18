@@ -4,7 +4,7 @@ var errorMessages=[];
 
 window.addEventListener("load", async function(event)
 {
-    Swal.fire
+    /*Swal.fire
     ({
         title: "Controllo accesso esclusivo...",
         html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
@@ -13,7 +13,19 @@ window.addEventListener("load", async function(event)
         allowEscapeKey:false,
         allowOutsideClick:false,
         onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+    });*/
+	Swal.fire
+    ({
+        title: "Controllo accesso esclusivo...",
+        html: '<i style="color:white" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+		background:"transparent",
+        showConfirmButton:false,
+        showCloseButton:false,
+        allowEscapeKey:false,
+        allowOutsideClick:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
     });
+	
     var check=await checkAccessoEsclusivoImportaDati();
     setTimeout(function()
     {
@@ -110,7 +122,7 @@ async function importaTutto(button)
     var icon=button.getElementsByTagName("i")[0];
     icon.className="fad fa-spinner-third fa-spin";
 
-    databases=["Beb","Grimaldi","po00","Spareti","newpan"];
+    databases=["BeB","grimaldi","po00","spareti","NEWPAN"];
 
     Swal.fire
     ({
@@ -286,7 +298,7 @@ async function getSelectsScegliDatabase()
         tot_time_elapsed_secs+=parseFloat(response.time_elapsed_secs);
         errorMessages=[];
 
-        var tabelle=['doghe','doghelm','doghelr','dogherf','doghex','pannellis','pesicab','soffitti','tabcolli','travinf','travsup','cabine','cabkit','kit','kitpan','pannelli','DIBpaS','pannellil','DIBpan','sviluppi','dibsvi','cesoiati','DIBces','mater','DIBldr','tabrinf','DIBrin','rinfpiede','DIBrinp','lanacer','DIBlcr','corridoi','dibcor','carrelli','dibcar','DIBlams','DIBldrs','DIBrind','DIBtri','DIBtrs','cab_colli','cabsof','dibdog'];
+        var tabelle=['doghe','doghelm','doghelr','dogherf','doghex','pannellis','pesicab','soffitti','tabcolli','travinf','travsup','cabine','cabkit','kit','kitpan','pannelli','DIBpaS','pannellil','DIBpan','sviluppi','dibsvi','cesoiati','DIBces','mater','DIBldr','tabrinf','DIBrin','rinfpiede','DIBrinp','lanacer','DIBlcr','corridoi','dibcor','carrelli','dibcar','DIBlams','DIBldrs','DIBrind','DIBtri','DIBtrs','cab_colli','cabsof','dibdog','cavallotti'];
 
         var result="ok";
         for (let index = 0; index < tabelle.length; index++)
@@ -891,7 +903,19 @@ function toggleCheckboxAggiornaAnagrafiche(checked)
 }
 async function getPopupImportaDatabase(btn)
 {
-    var distinte=['materie_prime_pannelli','materie_prime_cabine','materie_prime_kit','materie_prime_sottoinsiemi_corridoi','lane_pannelli','traversine_inferiori_kit','traversine_superiori_kit','rinforzi_piede_pannelli','rinforzi_pannelli','rinforzi_kit','lane_ceramiche_kit','pannelli_cabine','kit_sottoinsiemi_corridoi','kit_cabine','cabine_carrelli','pannelli_kit','lavorazioni_lamiere','lavorazioni_lana','lavorazioni_sviluppi'];
+	Swal.fire
+    ({
+        title: "Caricamento in corso...",
+        html: '<i style="color:white" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+		background:"transparent",
+        showConfirmButton:false,
+        showCloseButton:false,
+        allowEscapeKey:false,
+        allowOutsideClick:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+    });
+	
+    var distinte=['materie_prime_pannelli','materie_prime_cabine','materie_prime_kit','materie_prime_sottoinsiemi_corridoi','lane_pannelli','traversine_inferiori_kit','traversine_superiori_kit','rinforzi_piede_pannelli','rinforzi_pannelli','rinforzi_kit','lane_ceramiche_kit','pannelli_cabine','cavallotti','kit_sottoinsiemi_corridoi','kit_cabine','cabine_carrelli','pannelli_kit','lavorazioni_lamiere','lavorazioni_lana','lavorazioni_sviluppi'];
     var anagrafiche=["carrelli","sottoinsiemi_corridoi","cabine","kit","pannelli","rinforzi_piede","lamiere","sviluppi","traversine_superiori","lane_ceramiche","traversine_inferiori","rinforzi","lane","cesoiati"];
 
     var outerContainer=document.createElement("div");
@@ -1516,7 +1540,7 @@ function getPopupSvuotaDistinte(button)
 
         document.body.appendChild(selectOuterContainer);
 
-        var distinte=['materie_prime_pannelli','materie_prime_cabine','materie_prime_kit','materie_prime_sottoinsiemi_corridoi','lane_pannelli','traversine_inferiori_kit','traversine_superiori_kit','rinforzi_piede_pannelli','rinforzi_pannelli','rinforzi_kit','lane_ceramiche_kit','pannelli_cabine','kit_sottoinsiemi_corridoi','kit_cabine','cabine_carrelli','pannelli_kit','lavorazioni_lamiere','lavorazioni_lana','lavorazioni_sviluppi'];
+        var distinte=['materie_prime_pannelli','materie_prime_cabine','materie_prime_kit','materie_prime_sottoinsiemi_corridoi','lane_pannelli','traversine_inferiori_kit','traversine_superiori_kit','rinforzi_piede_pannelli','rinforzi_pannelli','rinforzi_kit','lane_ceramiche_kit','pannelli_cabine','cavallotti','kit_sottoinsiemi_corridoi','kit_cabine','cabine_carrelli','pannelli_kit','lavorazioni_lamiere','lavorazioni_lana','lavorazioni_sviluppi'];
 
         distinte.forEach(function(distinta)
         {
