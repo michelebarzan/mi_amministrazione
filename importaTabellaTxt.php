@@ -20,7 +20,7 @@
     {
         $database="newpan";
 
-        $file = fopen("//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/$fileName", "r") or die("error");
+        $file = fopen("//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/cavalotti.txt", "r") or die("error");
         //$file = fopen("C:/mi_db_tecnico/$database/regdef/Cavalotti.txt", "r") or die("error");
 
         include "connessioneDb.php";
@@ -131,24 +131,40 @@
                         $columnsL=sizeof($columns);
                         $rowArrayL=sizeof($rowArray);
 
-                        $diff=$columnsL-$rowArrayL;
-                        for ($x=0; $x < $diff; $x++) 
-                        { 
-                            array_push($rowArray,"NULL");
-                        }
+						$diff=$columnsL-$rowArrayL;
+						for ($x=0; $x < $diff; $x++) 
+						{ 
+							array_push($rowArray,"NULL");
+						}
                     }
                     //controllo di non aver piu colonne nella riga del txt che nella tabella 
-                    if(sizeof($rowArray)<sizeof($columns))
+                    if(sizeof($rowArray)>sizeof($columns))
                     {
-                        $columnsL=sizeof($columns);
-                        $rowArrayL=sizeof($rowArray);
+						if($table=="mater")
+						{
+							$col7=$rowArray[7];
+							$col8=$rowArray[8];
+							
+							$rowArray[7]=$col8;
+							$rowArray[8]=$col7;
+							
+							$columns[7]="UM";
+							array_push($columns,"UTENTE");
+							
+							$columns_string="[".implode("],[",$columns)."]";
+						}
+						else
+						{
+							$columnsL=sizeof($columns);
+							$rowArrayL=sizeof($rowArray);
 
-                        $diff=$rowArrayL-$columnsL;
-                        array_splice($array, count($array) - $diff, $diff);
+							$diff=$rowArrayL-$columnsL;
+							array_splice($rowArray, count($rowArray) - $diff, $diff);
+						}
                     }
                     //se il numero di colonnne e uguale
                     if(sizeof($rowArray)===sizeof($columns))
-                    {        
+                    {	
                         //controllo i valori dell' array, se sono nulli o altri caratteri li sistemo
                         for ($y=0; $y < sizeof($rowArray); $y++)
                         {
