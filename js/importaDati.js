@@ -1846,89 +1846,121 @@ function editableTableLoad()
 }
 function getPopupSvuotaDatabaseTxt(button)
 {
-    button.disabled=true;
-    var icon=button.getElementsByTagName("i")[0];
-    icon.className="fad fa-spinner-third fa-spin";
+	Swal.fire
+	({
+		icon: 'warning',
+		title: "Vuoi svuotare tutti i database txt?",
+		width:550,
+		showCancelButton: true,
+		showConfirmButton: true,
+		cancelButtonText: `Annulla`,
+		confirmButtonText: `Elimina`,
+		onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-confirm")[0].style.fontSize="14px";document.getElementsByClassName("swal2-cancel")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+	}).then((result) =>
+	{
+		if (result.value)
+		{
+			button.disabled=true;
+			var icon=button.getElementsByTagName("i")[0];
+			icon.className="fad fa-spinner-third fa-spin";
 
-    Swal.fire
-    ({
-        title: "Eliminazione in corso...",
-        html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
-        showConfirmButton:false,
-        showCloseButton:false,
-        allowEscapeKey:false,
-        allowOutsideClick:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
-    });
+			Swal.fire
+			({
+				title: "Eliminazione in corso...",
+				html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+				showConfirmButton:false,
+				showCloseButton:false,
+				allowEscapeKey:false,
+				allowOutsideClick:false,
+				onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+			});
 
-    $.post("svuotaDatabaseTxt.php",
-    function(response, status)
-    {
-        if(status=="success")
-        {
-            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-            {
-                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}});
-                console.log(response);
-            }
-            else
-            {
-                Swal.fire
-                ({
-                    icon:"success",
-                    showConfirmButton:false,
-                    showCloseButton:true,
-                    title: "Database txt svuotati",
-                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
-                });
-            }
-        }
-    });
+			$.post("svuotaDatabaseTxt.php",
+			function(response, status)
+			{
+				if(status=="success")
+				{
+					if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+					{
+						Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}});
+						console.log(response);
+					}
+					else
+					{
+						Swal.fire
+						({
+							icon:"success",
+							showConfirmButton:false,
+							showCloseButton:true,
+							title: "Database txt svuotati",
+							onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+						});
+					}
+				}
+			});
 
-    button.disabled=false;
-    icon.className="fad fa-eraser";
+			button.disabled=false;
+			icon.className="fad fa-eraser";
+		}
+	});
 }
 function getPopupSvuotaDatabaseSql(button)
 {
-    button.disabled=true;
-    var icon=button.getElementsByTagName("i")[0];
-    icon.className="fad fa-spinner-third fa-spin";
+	Swal.fire
+	({
+		icon: 'warning',
+		title: "Vuoi svuotare il database sql?",
+		width:550,
+		showCancelButton: true,
+		showConfirmButton: true,
+		cancelButtonText: `Annulla`,
+		confirmButtonText: `Elimina`,
+		onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-confirm")[0].style.fontSize="14px";document.getElementsByClassName("swal2-cancel")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+	}).then((result) =>
+	{
+		if (result.value)
+		{
+			button.disabled=true;
+			var icon=button.getElementsByTagName("i")[0];
+			icon.className="fad fa-spinner-third fa-spin";
 
-    Swal.fire
-    ({
-        title: "Eliminazione in corso...",
-        html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
-        showConfirmButton:false,
-        showCloseButton:false,
-        allowEscapeKey:false,
-        allowOutsideClick:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
-    });
+			Swal.fire
+			({
+				title: "Eliminazione in corso...",
+				html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+				showConfirmButton:false,
+				showCloseButton:false,
+				allowEscapeKey:false,
+				allowOutsideClick:false,
+				onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+			});
 
-    $.post("svuotaDatabaseSql.php",
-    function(response, status)
-    {
-        if(status=="success")
-        {
-            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-            {
-                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}});
-                console.log(response);
-            }
-            else
-            {
-                Swal.fire
-                ({
-                    icon:"success",
-                    showConfirmButton:false,
-                    showCloseButton:true,
-                    title: "Database sql svuotato",
-                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
-                });
-            }
-        }
-    });
+			$.post("svuotaDatabaseSql.php",
+			function(response, status)
+			{
+				if(status=="success")
+				{
+					if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+					{
+						Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}});
+						console.log(response);
+					}
+					else
+					{
+						Swal.fire
+						({
+							icon:"success",
+							showConfirmButton:false,
+							showCloseButton:true,
+							title: "Database sql svuotato",
+							onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+						});
+					}
+				}
+			});
 
-    button.disabled=false;
-    icon.className="fad fa-eraser";
+			button.disabled=false;
+			icon.className="fad fa-eraser";
+		}
+	});
 }

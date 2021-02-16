@@ -147,7 +147,7 @@
                 }
             break;
             case "lavorazioni_lana" :/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                $q="INSERT INTO [dbo].[lavorazioni_lana] ([codice_lavorazione_lana],[descrizione],[misura_1],[misura_2],[misura_3],[misura_4],[misura_5],[id_lana]) SELECT $db.dbo.DIBldr.CODMAT, 'lavorazione' AS descrizione_lavorazione, $db.dbo.DIBldr.LUNG, $db.dbo.DIBldr.HALT, $db.dbo.DIBldr.SPESS, $db.dbo.DIBldr.MMQ, NULL AS misura_5,  dbo.lane.id_lana FROM $db.dbo.DIBldr INNER JOIN dbo.lane ON $db.dbo.DIBldr.CODLDR = dbo.lane.codice_lana WHERE (CODMAT NOT LIKE '+%') AND (dbo.lane.id_lana NOT IN (SELECT DISTINCT dbo.lane.id_lana FROM dbo.lavorazioni_lana))";
+                $q="INSERT INTO [dbo].[lavorazioni_lana] ([codice_lavorazione_lana],[descrizione],[misura_1],[misura_2],[misura_3],[misura_4],[misura_5],[id_lana]) SELECT $db.dbo.DIBldr.CODMAT, 'lavorazione' AS descrizione_lavorazione, $db.dbo.DIBldr.LUNG, $db.dbo.DIBldr.HALT, $db.dbo.DIBldr.SPESS, $db.dbo.DIBldr.MMQ, NULL AS misura_5,  dbo.lane.id_lana FROM $db.dbo.DIBldr INNER JOIN dbo.lane ON $db.dbo.DIBldr.CODLDR = dbo.lane.codice_lana WHERE (CODMAT NOT LIKE '+%') AND (dbo.lane.id_lana NOT IN (SELECT DISTINCT id_lana FROM dbo.lavorazioni_lana))";
 	$r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)
@@ -231,7 +231,7 @@
                 }
             break;
             case "lavorazioni_lamiere" :/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                $q="INSERT INTO [dbo].[lavorazioni_lamiere] ([codice_lavorazione_lamiera],[descrizione],[misura_1],[misura_2],[misura_3],[misura_4],[misura_5] ,[id_lamiera]) SELECT $db.dbo.DIBpan.CODELE, 'lavorazione' AS descrizione_lavorazione, $db.dbo.DIBpan.DIMX, $db.dbo.DIBpan.DIMY, $db.dbo.DIBpan.QNT, $db.dbo.DIBpan.POSX,  $db.dbo.DIBpan.POSY, dbo.lamiere.id_lamiera FROM $db.dbo.DIBpan INNER JOIN dbo.lamiere ON $db.dbo.DIBpan.CODPAN = dbo.lamiere.codice_lamiera WHERE ($db.dbo.DIBpan.CODELE NOT LIKE '+%') AND ($db.dbo.DIBpan.CODPAN NOT IN (SELECT DISTINCT $db.dbo.DIBpan.CODPAN FROM dbo.lavorazioni_lamiere))";
+                $q="INSERT INTO [dbo].[lavorazioni_lamiere] ([codice_lavorazione_lamiera],[descrizione],[misura_1],[misura_2],[misura_3],[misura_4],[misura_5] ,[id_lamiera]) SELECT $db.dbo.DIBpan.CODELE, 'lavorazione' AS descrizione_lavorazione, $db.dbo.DIBpan.DIMX, $db.dbo.DIBpan.DIMY, $db.dbo.DIBpan.QNT, $db.dbo.DIBpan.POSX,  $db.dbo.DIBpan.POSY, dbo.lamiere.id_lamiera FROM $db.dbo.DIBpan INNER JOIN dbo.lamiere ON $db.dbo.DIBpan.CODPAN = dbo.lamiere.codice_lamiera WHERE ($db.dbo.DIBpan.CODELE NOT LIKE '+%') AND (dbo.lamiere.id_lamiera NOT IN (SELECT DISTINCT id_lamiera FROM dbo.lavorazioni_lamiere))";
 	$r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)
@@ -360,7 +360,7 @@
                 }
             break;
             case "carrelli" :/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                $q="INSERT INTO [dbo].[carrelli] ([codice_carrello],[descrizione],[mq],[peso],[sottoinsieme_corridoio],[um],importazione) SELECT $db.dbo.carrelli.CODCAR, $db.dbo.carrelli.DESCRIZIONE, $db.dbo.carrelli.mq, $db.dbo.carrelli.peso, dbo.sottoinsiemi_corridoi.id_sottoinsieme_corridoio,  $db.dbo.carrelli.UM ,'in_corso' FROM $db.dbo.carrelli INNER JOIN $db.dbo.dibcar ON $db.dbo.carrelli.CODCAR = $db.dbo.dibcar.CODCAR INNER JOIN dbo.sottoinsiemi_corridoi ON $db.dbo.dibcar.NCAB = dbo.sottoinsiemi_corridoi.codice_sottoinsieme_corridoio WHERE ($db.dbo.carrelli.CODCAR NOT IN (SELECT codice_carrello FROM dbo.carrelli AS carrelli_1))";
+                $q="INSERT INTO [dbo].[carrelli] ([codice_carrello],[descrizione],[mq],[peso],[sottoinsieme_corridoio],[um],importazione) SELECT $db.dbo.carrelli.CODCAR, $db.dbo.carrelli.DESCRIZIONE, $db.dbo.carrelli.mq, $db.dbo.carrelli.peso, dbo.sottoinsiemi_corridoi.id_sottoinsieme_corridoio,  $db.dbo.carrelli.UM ,'in_corso' FROM $db.dbo.carrelli INNER JOIN $db.dbo.dibcar ON $db.dbo.carrelli.CODCAR = $db.dbo.dibcar.CODCAR LEFT OUTER JOIN dbo.sottoinsiemi_corridoi ON $db.dbo.dibcar.NCAB = dbo.sottoinsiemi_corridoi.codice_sottoinsieme_corridoio WHERE ($db.dbo.carrelli.CODCAR NOT IN (SELECT codice_carrello FROM dbo.carrelli AS carrelli_1))";
 	$r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)
