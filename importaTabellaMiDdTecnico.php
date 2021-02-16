@@ -360,7 +360,7 @@
                 }
             break;
             case "carrelli" :/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                $q="INSERT INTO [dbo].[carrelli] ([codice_carrello],[descrizione],[mq],[peso],[sottoinsieme_corridoio],[um],importazione) SELECT $db.dbo.carrelli.CODCAR, $db.dbo.carrelli.DESCRIZIONE, $db.dbo.carrelli.mq, $db.dbo.carrelli.peso, dbo.sottoinsiemi_corridoi.id_sottoinsieme_corridoio,  $db.dbo.carrelli.UM ,'in_corso' FROM $db.dbo.carrelli INNER JOIN $db.dbo.dibcar ON $db.dbo.carrelli.CODCAR = $db.dbo.dibcar.CODCAR LEFT OUTER JOIN dbo.sottoinsiemi_corridoi ON $db.dbo.dibcar.NCAB = dbo.sottoinsiemi_corridoi.codice_sottoinsieme_corridoio WHERE ($db.dbo.carrelli.CODCAR NOT IN (SELECT codice_carrello FROM dbo.carrelli AS carrelli_1))";
+                $q="INSERT INTO [dbo].[carrelli] ([codice_carrello],[descrizione],[mq],[peso],[sottoinsieme_corridoio],[um],importazione,n_cab) SELECT $db.dbo.carrelli.CODCAR, $db.dbo.carrelli.DESCRIZIONE, $db.dbo.carrelli.mq, $db.dbo.carrelli.peso, dbo.sottoinsiemi_corridoi.id_sottoinsieme_corridoio,  $db.dbo.carrelli.UM ,'in_corso',$db.dbo.dibcar.NCAB FROM $db.dbo.carrelli INNER JOIN $db.dbo.dibcar ON $db.dbo.carrelli.CODCAR = $db.dbo.dibcar.CODCAR LEFT OUTER JOIN dbo.sottoinsiemi_corridoi ON $db.dbo.dibcar.NCAB = dbo.sottoinsiemi_corridoi.codice_sottoinsieme_corridoio WHERE ($db.dbo.carrelli.CODCAR NOT IN (SELECT codice_carrello FROM dbo.carrelli AS carrelli_1))";
 	$r=sqlsrv_query($conn,$q);
                 $result["query_".$db]=$q;
                 if($r==FALSE)
