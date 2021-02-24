@@ -1,6 +1,7 @@
 var databases;
 var tabelleCheckboxesAggiornaAnagrafiche=[];
 var errorMessages=[];
+var hot;
 
 window.addEventListener("load", async function(event)
 {
@@ -85,7 +86,7 @@ function insertAccessoEsclusivoImportaDati()
     {
         if(status=="success")
         {
-            console.log(response);
+            //console.log(response);
         }
     });
 }
@@ -96,7 +97,7 @@ function deleteAccessoEsclusivoImportaDati()
     {
         if(status=="success")
         {
-            console.log(response);
+            //console.log(response);
         }
     });
 }
@@ -741,8 +742,9 @@ function closePopupSvuotaDistinte()
 }
 async function getElencoLogImportazioni()
 {
+    try {hot.destroy();} catch (error) {}
+
     document.getElementById("importaDatiContainer").style.overflowY="";
-    document.getElementById("importaDatiContainer").style.paddingRight="";
 
     var button=document.getElementById("bntLogImportazioni");
     button.getElementsByTagName("span")[0].style.color="#4C91CB";
@@ -1813,7 +1815,7 @@ function checkOptionSvuotaDistinte(option)
         option.setAttribute("checked","true");
     }
 }
-function getTabellaMateriePrime(button)
+async function getTabellaMateriePrime(button)
 {
     document.getElementById("bntLogImportazioni").getElementsByTagName("span")[0].style.color="";
     document.getElementById("bntLogImportazioni").getElementsByTagName("i")[0].style.color="";
@@ -1821,10 +1823,205 @@ function getTabellaMateriePrime(button)
     button.getElementsByTagName("span")[0].style.color="#4C91CB";
     button.getElementsByTagName("i")[0].style.color="#4C91CB";
 
-    document.getElementById("importaDatiContainer").style.overflowY="auto";
-    document.getElementById("importaDatiContainer").style.paddingRight="15px";
+    document.getElementById("importaDatiContainer").style.width="calc(100% - 100px)";
+    document.getElementById("importaDatiContainer").style.maxWidth="calc(100% - 100px)";
+    document.getElementById("importaDatiContainer").style.minWidth="calc(100% - 100px)";
+    document.getElementById("importaDatiContainer").style.padding="0px";
+    document.getElementById("importaDatiContainer").style.marginLeft="50px";
+    document.getElementById("importaDatiContainer").style.marginRight="50px";
 
-    getTable("materie_prime");
+    //document.getElementById("importaDatiContainer").style.paddingRight="15px";
+
+    var container = document.getElementById('importaDatiContainer');
+    container.innerHTML="";
+
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    var materiePrime=await getMateriePrime();
+
+    Swal.close();
+
+    var height=container.offsetHeight;
+
+    if(materiePrime.data.length>0)
+    {
+		try {hot.destroy();} catch (error) {}
+
+        hot = new Handsontable
+        (
+            container,
+            {
+                data: materiePrime.data,
+                rowHeaders: true,
+                manualColumnResize: true,
+                colHeaders: materiePrime.colHeaders,
+                className: "htMiddle",
+                filters: true,
+                dropdownMenu: true,
+                headerTooltips: true,
+                language: 'it-IT',
+                contextMenu: true,
+                columnSorting: true,
+                width:"100%",
+                height,
+                columns:materiePrime.columns,
+                afterChange: (changes) =>
+                {
+                    if(changes!=null)
+                    {
+                        changes.forEach(([row, prop, oldValue, newValue]) =>
+                        {
+                            if(prop!="id_materia_prima")
+                            {
+                                var id_materia_prima=hot.getDataAtCell(row, 0);
+                                aggiornaRigaMateriePrime(id_materia_prima,prop,newValue,oldValue);
+                            }
+                        });
+                    }
+                },
+                afterCreateRow: (index,amount,source) =>
+                {
+                    creaRigaMateriePrime(index);
+                },
+                beforeRemoveRow: (index,amount,physicalRows,source)  =>
+                {
+                    for (let i = 0; i < physicalRows.length; i++)
+                    {
+                        const indice = physicalRows[i];
+                        var id_materia_prima=hot.getDataAtCell(indice, 0);
+                        eliminaRigaMateriePrime(id_materia_prima);
+                    }
+                }
+            }
+        );
+        document.getElementById("hot-display-license-info").remove();
+        $(".handsontable .changeType").css
+        ({
+            "background": "#eee",
+            "border-radius": "0",
+            "border": "none",
+            "color": "#404040",
+            "font-size": "14px",
+            "line-height": "normal",
+            "padding": "0px",
+            "margin": "0px",
+            "float": "right"
+        });
+    }
+}
+function aggiornaRigaMateriePrime(id_materia_prima,colonna,valore,oldValue)
+{
+    $.get("aggiornaRigaMateriePrime.php",{id_materia_prima,colonna,valore,oldValue},
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+            }
+        }
+    });
+}
+function creaRigaMateriePrime(index)
+{
+    $.get("creaRigaMateriePrime.php",
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+            }
+            else
+                hot.setDataAtCell(index, 0, response);
+        }
+    });
+}
+function eliminaRigaMateriePrime(id_materia_prima)
+{
+    Swal.fire
+    ({
+        title: "Caricamento in corso...",
+        html: '<i style="color:white" class="fad fa-spinner-third fa-spin fa-4x"></i>',
+		background:"transparent",
+        showConfirmButton:false,
+        showCloseButton:false,
+        allowEscapeKey:false,
+        allowOutsideClick:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+    });
+    
+    $.get("eliminaRigaMateriePrime.php",{id_materia_prima},
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            Swal.close();
+            if(response.toLowerCase().indexOf("vincolo_di_chiave")>-1)
+            {
+                Swal.fire
+                ({
+                    icon:"error",
+                    title: "Errore. Questa materia prima è gia stata utilizzata e non può essere eliminata",
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}
+                }).then((result) =>
+                {
+                    getTabellaMateriePrime(document.getElementById("bntMateriePrime"));
+                });
+                console.log(response);
+            }
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+            }
+        }
+    });
+}
+function getMateriePrime()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("getMateriePrimeHot.php",
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
 }
 function getTable(table,orderBy,orderType)
 {

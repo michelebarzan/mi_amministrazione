@@ -6,7 +6,7 @@
 
     $logImportazioni=[];
 
-    $q="SELECT log_importazioni_database.*,utenti.username FROM [dbo].[log_importazioni_database],utenti WHERE log_importazioni_database.utente=utenti.id_utente ORDER BY [data] DESC";
+    $q="SELECT TOP(1000) log_importazioni_database.*,utenti.username FROM [dbo].[log_importazioni_database],utenti WHERE log_importazioni_database.utente=utenti.id_utente ORDER BY [data] DESC";
     $r=sqlsrv_query($conn,$q);
     if($r==FALSE)
     {
