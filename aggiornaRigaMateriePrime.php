@@ -26,6 +26,24 @@
                         die("error".$q);
                     }
                 }
+                else
+                {
+                    $q2="INSERT INTO raggruppamenti_materie_prime (nome) VALUES ('$valore')";
+                    $r2=sqlsrv_query($conn,$q2);
+                    if($r2==FALSE)
+                    {
+                        die("error".$q2);
+                    }
+                    else
+                    {
+                        $q="UPDATE materie_prime SET [$colonna]=(SELECT MAX(id_raggruppamento) FROM raggruppamenti_materie_prime WHERE nome='$valore') WHERE id_materia_prima = $id_materia_prima";
+                        $r=sqlsrv_query($conn,$q);
+                        if($r==FALSE)
+                        {
+                            die("error".$q);
+                        }
+                    }
+                }
             }
             else
                 die("error");
