@@ -22,6 +22,7 @@
         {
             array_push($raggruppamenti,$row3["nome"]);
         }
+        array_push($raggruppamenti,"Nessuno");
     }
 
     $q2="SELECT COLUMN_NAME, CASE WHEN DATA_TYPE = 'varchar' THEN 'text' ELSE 'numeric' END AS type
@@ -65,7 +66,7 @@
 
     $data=[];
 
-    $q="SELECT dbo.materie_prime.id_materia_prima, dbo.materie_prime.codice_materia_prima, dbo.materie_prime.descrizione, dbo.materie_prime.um, dbo.materie_prime.peso, dbo.materie_prime.note, dbo.materie_prime.confezione, dbo.raggruppamenti_materie_prime.nome AS raggruppamento, dbo.materie_prime.peso_validato
+    $q="SELECT dbo.materie_prime.id_materia_prima, dbo.materie_prime.codice_materia_prima, dbo.materie_prime.descrizione, dbo.materie_prime.um, dbo.materie_prime.peso, dbo.materie_prime.note, dbo.materie_prime.confezione, ISNULL(dbo.raggruppamenti_materie_prime.nome, 'Nessuno') AS raggruppamento, dbo.materie_prime.peso_validato
         FROM dbo.materie_prime LEFT OUTER JOIN dbo.raggruppamenti_materie_prime ON dbo.materie_prime.raggruppamento = dbo.raggruppamenti_materie_prime.id_raggruppamento";
     $r=sqlsrv_query($conn,$q);
     if($r==FALSE)

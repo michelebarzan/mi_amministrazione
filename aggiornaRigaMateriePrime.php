@@ -12,29 +12,23 @@
     switch ($colonna) 
     {
         case 'raggruppamento':
-            $stmt = sqlsrv_query( $conn, "SELECT * FROM raggruppamenti_materie_prime WHERE nome='$valore'");
-
-            if ($stmt)
+            if($valore=="Nessuno")
             {
-                $rows = sqlsrv_has_rows( $stmt );
-                if ($rows === true)
+                $q="UPDATE materie_prime SET [$colonna]=NULL WHERE id_materia_prima = $id_materia_prima";
+                $r=sqlsrv_query($conn,$q);
+                if($r==FALSE)
                 {
-                    $q="UPDATE materie_prime SET [$colonna]=(SELECT MAX(id_raggruppamento) FROM raggruppamenti_materie_prime WHERE nome='$valore') WHERE id_materia_prima = $id_materia_prima";
-                    $r=sqlsrv_query($conn,$q);
-                    if($r==FALSE)
-                    {
-                        die("error".$q);
-                    }
+                    die("error".$q);
                 }
-                else
+            }
+            else
+            {
+                $stmt = sqlsrv_query( $conn, "SELECT * FROM raggruppamenti_materie_prime WHERE nome='$valore'");
+
+                if ($stmt)
                 {
-                    $q2="INSERT INTO raggruppamenti_materie_prime (nome) VALUES ('$valore')";
-                    $r2=sqlsrv_query($conn,$q2);
-                    if($r2==FALSE)
-                    {
-                        die("error".$q2);
-                    }
-                    else
+                    $rows = sqlsrv_has_rows( $stmt );
+                    if ($rows === true)
                     {
                         $q="UPDATE materie_prime SET [$colonna]=(SELECT MAX(id_raggruppamento) FROM raggruppamenti_materie_prime WHERE nome='$valore') WHERE id_materia_prima = $id_materia_prima";
                         $r=sqlsrv_query($conn,$q);
@@ -43,10 +37,29 @@
                             die("error".$q);
                         }
                     }
+                    else
+                    {
+                        $q2="INSERT INTO raggruppamenti_materie_prime (nome) VALUES ('$valore')";
+                        $r2=sqlsrv_query($conn,$q2);
+                        if($r2==FALSE)
+                        {
+                            die("error".$q2);
+                        }
+                        else
+                        {
+                            $q="UPDATE materie_prime SET [$colonna]=(SELECT MAX(id_raggruppamento) FROM raggruppamenti_materie_prime WHERE nome='$valore') WHERE id_materia_prima = $id_materia_prima";
+                            $r=sqlsrv_query($conn,$q);
+                            if($r==FALSE)
+                            {
+                                die("error".$q);
+                            }
+                        }
+                    }
                 }
+                else
+                    die("error");
             }
-            else
-                die("error");
+            
         break;
         default:
             $q="UPDATE materie_prime SET [$colonna]='$valore' WHERE id_materia_prima = $id_materia_prima";

@@ -30,7 +30,9 @@
 			<button class="rcb-button-text-icon" id="bntAggiornaAnagrafiche" onclick="getPopupAggiornaAnagrafiche(this)"><span>Aggiorna anagrafiche</span><i style="margin-left:10px" class="fad fa-edit"></i></button>
 			<button class="rcb-button-text-icon" id="bntSvuotaDistinte" onclick="getPopupSvuotaDistinte(this)"><span>Svuota distinte</span><i style="margin-left:10px" class="fad fa-eraser"></i></button>
 			<button class="rcb-button-text-icon" id="bntMateriePrime" onclick="getTabellaMateriePrime(this)"><span>Materie prime</span><i style="margin-left:10px" class="fal fa-table"></i></button>
+			<button class="rcb-button-text-icon" id="buttonImportaExcel" onclick="getPopupRaggruppamenti()"><span>Raggruppamenti materie prime</span><i class="fad fa-object-group" style="margin-left:10px"></i></button>
 			<button class="rcb-button-text-icon" id="bntLogImportazioni" onclick="/*getElencoLogImportazioni()*/location.reload()"><span>Log importazioni</span><i style="margin-left:10px" class="fad fa-history"></i></button>
+			<button class="rcb-button-text-icon" id="buttonRunSPPesoQntCabine" onclick="getPopupSPPesoQntCabine()"><span>Ricalcola peso cabine</span><i class="fad fa-weight-hanging" style="margin-left:10px"></i></button>
 			<div id="rowsNumEditableTable" style="display:none"></div>
 		</div>
 		<div id="importaDatiContainer"></div>
