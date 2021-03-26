@@ -268,15 +268,15 @@ async function getSelectsScegliDatabase()
         var tot_time_elapsed_secs=0;
         errorMessages=[];
 
-        var tabelle=['doghe','doghelm','doghelr','dogherf','doghex','pannellis','pesicab','soffitti','tabcolli','travinf','travsup','cabine','cabkit','kit','kitpan','pannelli','DIBpaS','pannellil','DIBpan','sviluppi','dibsvi','cesoiati','DIBces','mater','DIBldr','tabrinf','DIBrin','rinfpiede','DIBrinp','lanacer','DIBlcr','corridoi','dibcor','carrelli','dibcar','DIBlams','DIBldrs','DIBrind','DIBtri','DIBtrs','cab_colli','cabsof','dibdog','cavallotti'];
-        //var tabelle=["dibpas"];
+        var tabelle=['doghe','doghelm','doghelr','dogherf','doghex','pannellis','pesicab','soffitti','tabcolli','travinf','travsup','cabine','cabkit','kit','kitpan','pannelli','DIBpaS','pannellil','DIBpan','sviluppi','dibsvi','cesoiati','DIBces','mater','DIBldr','tabrinf','DIBrin','rinfpiede','DIBrinp','lanacer','DIBlcr','corridoi','dibcor','carrelli','dibcar','DIBlams','DIBldrs','DIBrind','DIBtri','DIBtrs','cab_colli','cabsof','dibdog','cavalotti'];
+        //var tabelle=["dibcar"];
 
         var result="ok";
         for (let index = 0; index < tabelle.length; index++)
         {
             const tabella = tabelle[index];
 
-            var intervalPercentualeImportazioneTxt=setInterval(() =>
+            /*var intervalPercentualeImportazioneTxt=setInterval(() =>
             {
                 $.post("checkPercentualeImportazioneTxt.php",{tabella,database:databases[0]},
                 function(response, status)
@@ -294,7 +294,7 @@ async function getSelectsScegliDatabase()
                         }
                     }
                 });
-            }, 1000);
+            }, 1000);*/
 
             var row=document.createElement("div");
             row.setAttribute("class","importazione-mi-bd-tecnico-row");
@@ -308,15 +308,14 @@ async function getSelectsScegliDatabase()
             var span=document.createElement("div");
             span.setAttribute("style","margin-left:auto;display:flex;flex-direction:row;align-items:center;justify-content:flex-start");
             span.setAttribute("id","result_span_"+tabella);
-            var progressSpan=document.createElement("span");
+            /*var progressSpan=document.createElement("span");
             progressSpan.setAttribute("style","margin-right:5px;font-family:'Montserrat',sans-serif;font-size:12px;color:black;width:50px;text-align: right;");
             progressSpan.innerHTML="0%";
-            span.appendChild(progressSpan);
+            span.appendChild(progressSpan);*/
             var spinner=document.createElement("i");
             spinner.setAttribute("class","fad fa-spinner-third fa-spin");
             spinner.setAttribute("style","color:#4C91CB;font-size:14px");
             span.appendChild(spinner);
-            //span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
             row.appendChild(span);
 
             document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
@@ -324,13 +323,12 @@ async function getSelectsScegliDatabase()
             var response=await importaTabellaTxt(tabella,databases);
             console.log(response);
             
-            clearInterval(intervalPercentualeImportazioneTxt);
-            /*setTimeout(() => {
-                document.getElementById("result_span_"+tabella).getElementsByTagName("span")[0].remove();
-            }, 150);*/
+            //clearInterval(intervalPercentualeImportazioneTxt);
 
             if(response.length==0 || response.result=="error")
             {
+                errorMessages.push("Errore generico "+tabella);
+
                 document.getElementById("result_span_"+tabella).innerHTML='<i style="color:#d43f3a;font-size:14px" class="fad fa-times-circle"></i>';
                 document.getElementById("result_span_"+tabella).style.marginLeft="5px";
 
@@ -352,7 +350,11 @@ async function getSelectsScegliDatabase()
 
                 var span=document.createElement("span");
                 span.setAttribute("style","margin-left:auto;font-size:12px");
-                span.innerHTML="<b>"+response.rows+"</b> righe inserite in <b>"+response.time_elapsed_secs+"</b> secondi";
+                if(response.rows!=(response.rows+response.righeNonInserite-1))
+                    var color="#d43f3a";
+                else
+                    var color="black";
+                span.innerHTML="<b style='color:"+color+"'>"+response.rows+" / "+(response.rows+response.righeNonInserite-1)+"</b> righe inserite in <b>"+response.time_elapsed_secs+"</b> secondi";
                 document.getElementById("result_row_"+tabella).insertBefore(span,document.getElementById("result_span_"+tabella));
 
                 tot_rows+=response.rows;
@@ -439,12 +441,16 @@ async function getSelectsScegliDatabase()
 function alertErrorMessages()
 {
     var errorMessagesArray=[];
-    errorMessages.forEach(errorMessagesElement =>
+    /*errorMessages.forEach(errorMessagesElement =>
     {
         errorMessagesElement.forEach(errorMessage =>
         {
             errorMessagesArray.push(errorMessage);
         });
+    });*/
+    errorMessages.forEach(errorMessage =>
+    {
+        errorMessagesArray.push(errorMessage);
     });
 
     var ul=document.createElement("ul");

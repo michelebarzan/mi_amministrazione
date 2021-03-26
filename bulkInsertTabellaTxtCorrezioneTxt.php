@@ -42,21 +42,47 @@
 
         $nCol=0;
 
-        //legge il file e trova il numero di colonne
+        //legge il file e popolo l'array rows
+        $rows=[];
         $i=0;
         while(!feof($readFile))
         {
             $rowString=fgets($readFile);
+            $rowString=str_replace('"',"",$rowString);
+            $rowString=str_replace(chr(10),"",$rowString);
+            $rowString=str_replace(chr(13),"",$rowString);
             if($i>0)
             {
                 $rowArray=explode(chr(9),$rowString);
                 if(sizeof($rowArray)>$nCol)
                     $nCol=sizeof($rowArray);
+                array_push($rows,$rowString);
                 $righeFile++;
             }
             $i++;
         }
         fclose($readFile);
+
+        //sistema in numero di colonne degli elementi dell'array rows e scrive la riga sul file tmp.txt
+        $writeFile = fopen("\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\tmp.txt", "w") or die("error");
+        $removeNextLineFirstChar=false;
+        foreach ($rows as $rowString)
+        {
+            $rowArray=explode(chr(9),$rowString);
+            $rowStringNCol=sizeof($rowArray);
+            if($rowStringNCol<$nCol)
+            {
+                $rowString=substr($rowString, 0,-1);
+                while ($rowStringNCol < $nCol)
+                {
+                    $rowString.=chr(9)."NULL";
+                    $rowStringNCol++;
+                }
+            }
+            fwrite($writeFile, $rowString);
+            fwrite($writeFile, "$rowTerminator");
+        }
+        fclose($writeFile);
 
         ///elimina tmp_importazione_txt
         $q1="DROP TABLE [tmp_importazione_txt]";
@@ -87,7 +113,7 @@
         }
 
         //bulk insert
-        $q2="BULK INSERT [tmp_importazione_txt] FROM 'C:/mi_webapp_help/importaTxt/$table.txt'";
+        $q2="BULK INSERT [tmp_importazione_txt] FROM 'C:/mi_webapp_help/importaTxt/tmp.txt' WITH (ROWTERMINATOR = '$rowTerminator')";
         array_push($queries,$q2);
         $r2=sqlsrv_query($conn,$q2);
         //array_push($stmts,$r2);
@@ -95,17 +121,6 @@
         {
             array_push($errorMessages,print_r(sqlsrv_errors(),TRUE));
             die("error3 ".$q2." ".print_r(sqlsrv_errors(),TRUE));
-        }
-
-        //rimuovi riga intestazione
-        $q13="DELETE TOP (1) FROM [tmp_importazione_txt]";
-        array_push($queries,$q13);
-        $r13=sqlsrv_query($conn,$q13);
-        //array_push($stmts,$r13);
-        if($r13==FALSE)
-        {
-            array_push($errorMessages,print_r(sqlsrv_errors(),TRUE));
-            die("error6 ".$q13." ".print_r(sqlsrv_errors(),TRUE));
         }
 
         //crea string insert
@@ -143,9 +158,8 @@
             $x=0;
             foreach ($columns as $column)
             {
-                $apici='"';
                 if($column['DATA_TYPE']=="text")
-                    $q5.="REPLACE([tmp_$x],'$apici',''),";
+                    $q5.="[tmp_$x],";
                 else
                     $q5.="TRY_CONVERT(FLOAT,[tmp_$x]),";
                 $x++;
@@ -153,6 +167,11 @@
             $q5=rtrim($q5, ", ");
             $q5.=" FROM [tmp_importazione_txt];SET ANSI_WARNINGS  ON;";
         }
+
+        /*if ( sqlsrv_begin_transaction( $conn ) === false )
+        {
+            die( print_r( sqlsrv_errors(), true ));
+        }*/
 
         //svuota tabella
         $q12="DELETE FROM [$database].[dbo].[$table]";
@@ -175,6 +194,23 @@
             array_push($errorMessages,print_r(sqlsrv_errors(),TRUE));
             die("error6 ".$q5." ".print_r(sqlsrv_errors(),TRUE));
         }
+
+        /*$commit=true;
+        foreach ($stmts as $stmt) 
+        {
+            if(!$stmt)
+            {
+                $commit=false;
+            }
+        }
+        if( $commit )
+        {
+            sqlsrv_commit( $conn );
+        }
+        else
+        {
+            sqlsrv_rollback( $conn );
+        }*/
 
         //conta righe
         $q7="SELECT COUNT(*) AS n FROM [$database].[dbo].[$table]";
