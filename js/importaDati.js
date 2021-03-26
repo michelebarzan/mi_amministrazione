@@ -263,50 +263,38 @@ async function getSelectsScegliDatabase()
             allowOutsideClick:false,
             onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="black";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
         });
-
+        
         var tot_rows=0;
         var tot_time_elapsed_secs=0;
-
-        var row=document.createElement("div");
-        row.setAttribute("class","importazione-mi-bd-tecnico-row");
-        row.setAttribute("id","result_row_aggiornamenti");
-
-        var span=document.createElement("span");
-        span.setAttribute("style","color:black;font-weight: bold;");
-        span.innerHTML="Aggiornamenti";
-        row.appendChild(span);
-
-        var span=document.createElement("span");
-        span.setAttribute("style","margin-left:auto");
-        span.setAttribute("id","result_span_aggiornamenti");
-        span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
-        row.appendChild(span);
-
-        document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
-
-        var response=await aggiornamentiTabelleTxt(databases);
-        console.log(response);
-
-        if(response.result=="ok")
-            document.getElementById("result_span_aggiornamenti").innerHTML='<i style="color:#70B085;font-size:14px" class="fad fa-check-circle"></i>';
-        else
-            document.getElementById("result_span_aggiornamenti").innerHTML='<i style="color:#d43f3a;font-size:14px" class="fad fa-times-circle"></i>';
-        document.getElementById("result_span_aggiornamenti").style.marginLeft="5px";
-
-        var span=document.createElement("span");
-        span.setAttribute("style","margin-left:auto;font-size:12px");
-        span.innerHTML="<b>"+response.time_elapsed_secs+"</b> secondi";
-        document.getElementById("result_row_aggiornamenti").insertBefore(span,document.getElementById("result_span_aggiornamenti"));
-
-        tot_time_elapsed_secs+=parseFloat(response.time_elapsed_secs);
         errorMessages=[];
 
         var tabelle=['doghe','doghelm','doghelr','dogherf','doghex','pannellis','pesicab','soffitti','tabcolli','travinf','travsup','cabine','cabkit','kit','kitpan','pannelli','DIBpaS','pannellil','DIBpan','sviluppi','dibsvi','cesoiati','DIBces','mater','DIBldr','tabrinf','DIBrin','rinfpiede','DIBrinp','lanacer','DIBlcr','corridoi','dibcor','carrelli','dibcar','DIBlams','DIBldrs','DIBrind','DIBtri','DIBtrs','cab_colli','cabsof','dibdog','cavallotti'];
+        //var tabelle=["dibpas"];
 
         var result="ok";
         for (let index = 0; index < tabelle.length; index++)
         {
             const tabella = tabelle[index];
+
+            var intervalPercentualeImportazioneTxt=setInterval(() =>
+            {
+                $.post("checkPercentualeImportazioneTxt.php",{tabella,database:databases[0]},
+                function(response, status)
+                {
+                    if(status=="success")
+                    {
+                        if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                        {
+                            console.log(response);
+                            document.getElementById("result_span_"+tabella).getElementsByTagName("span")[0].innerHTML="0%";
+                        }
+                        else
+                        {
+                            document.getElementById("result_span_"+tabella).getElementsByTagName("span")[0].innerHTML=parseInt(response)+"%";
+                        }
+                    }
+                });
+            }, 1000);
 
             var row=document.createElement("div");
             row.setAttribute("class","importazione-mi-bd-tecnico-row");
@@ -317,16 +305,30 @@ async function getSelectsScegliDatabase()
             span.innerHTML=tabella;
             row.appendChild(span);
 
-            var span=document.createElement("span");
-            span.setAttribute("style","margin-left:auto");
+            var span=document.createElement("div");
+            span.setAttribute("style","margin-left:auto;display:flex;flex-direction:row;align-items:center;justify-content:flex-start");
             span.setAttribute("id","result_span_"+tabella);
-            span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
+            var progressSpan=document.createElement("span");
+            progressSpan.setAttribute("style","margin-right:5px;font-family:'Montserrat',sans-serif;font-size:12px;color:black;width:50px;text-align: right;");
+            progressSpan.innerHTML="0%";
+            span.appendChild(progressSpan);
+            var spinner=document.createElement("i");
+            spinner.setAttribute("class","fad fa-spinner-third fa-spin");
+            spinner.setAttribute("style","color:#4C91CB;font-size:14px");
+            span.appendChild(spinner);
+            //span.innerHTML='<i style="color:#4C91CB;font-size:14px" class="fad fa-spinner-third fa-spin"></i>';
             row.appendChild(span);
 
             document.getElementById("importazioneMiDdTecnicoOuterContainer").appendChild(row);document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollTop = document.getElementById("importazioneMiDdTecnicoOuterContainer").scrollHeight;
 
             var response=await importaTabellaTxt(tabella,databases);
             console.log(response);
+            
+            clearInterval(intervalPercentualeImportazioneTxt);
+            /*setTimeout(() => {
+                document.getElementById("result_span_"+tabella).getElementsByTagName("span")[0].remove();
+            }, 150);*/
+
             if(response.length==0 || response.result=="error")
             {
                 document.getElementById("result_span_"+tabella).innerHTML='<i style="color:#d43f3a;font-size:14px" class="fad fa-times-circle"></i>';
@@ -531,7 +533,8 @@ function importaTabellaTxt(tabella,databases)
     return new Promise(function (resolve, reject) 
     {
         var JSONdatabases=JSON.stringify(databases);
-        $.post("importaTabellaTxt.php",
+        //$.post("importaTabellaTxt.php",
+        $.post("bulkInsertTabellaTxt.php",
         {
             tabella,
             JSONdatabases
