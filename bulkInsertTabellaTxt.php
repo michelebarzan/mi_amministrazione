@@ -33,21 +33,22 @@
         //Finche Loris non sistema cavalotti con cavallotti
         if($table=="cavallotti")
         {
-            /*if($database=="newpan")
-                $fileTabella = "//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/cavalotti";
+            if($database=="newpan")
+                $fileTabella = "//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/cavalotti.txt";
             else
-                $fileTabella = "//10.28.25.1/GrpMI/$database/regdef/cavalotti";*/
-            $fileTabella = "C:/mi_db_tecnico/$database/regdef/cavalotti.txt";
+                $fileTabella = "//10.28.25.1/GrpMI/$database/regdef/cavalotti.txt";
+            /*$fileTabella = "C:/mi_db_tecnico/$database/regdef/cavalotti.txt";*/
             copy($fileTabella,"\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\cavalotti.txt");
             $readFile = fopen("\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\cavalotti.txt", "r") or die("error");
         }
         else
         {
-            /*if($database=="newpan")
-                $fileTabella = "//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/$table";
+            if($database=="newpan")
+                $fileTabella = "//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/$table.txt";
             else
-                $fileTabella = "//10.28.25.1/GrpMI/$database/regdef/$table";*/
-            $fileTabella = "C:/mi_db_tecnico/$database/regdef/".$table.".txt";
+                $fileTabella = "//10.28.25.1/GrpMI/$database/regdef/$table.txt";
+            /*$fileTabella = "C:/mi_db_tecnico/$database/regdef/".$table.".txt";*/
+            copy($fileTabella,"\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\cavalotti.txt");
             $readFile = fopen("\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\".$table.".txt", "r") or die("error");
         }
 
