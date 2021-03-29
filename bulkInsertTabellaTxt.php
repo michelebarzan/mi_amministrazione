@@ -30,15 +30,26 @@
 
     foreach($databases as $database)
     {
-        /*if($database=="newpan")
-            $fileTabella = "//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/$table";
+        //Finche Loris non sistema cavalotti con cavallotti
+        if($table=="cavallotti")
+        {
+            /*if($database=="newpan")
+                $fileTabella = "//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/cavalotti";
+            else
+                $fileTabella = "//10.28.25.1/GrpMI/$database/regdef/cavalotti";*/
+            $fileTabella = "C:/mi_db_tecnico/$database/regdef/cavalotti.txt";
+            copy($fileTabella,"\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\cavalotti.txt");
+            $readFile = fopen("\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\cavalotti.txt", "r") or die("error");
+        }
         else
-            $fileTabella = "//10.28.25.1/GrpMI/$database/regdef/$table";*/
-        $fileTabella = "C:/mi_db_tecnico/$database/regdef/".$table.".txt";
-
-        copy($fileTabella,"\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\".$table.".txt");
-
-        $readFile = fopen("\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\".$table.".txt", "r") or die("error");
+        {
+            /*if($database=="newpan")
+                $fileTabella = "//10.28.25.1/GrpMI/Ut/PARETI/NEWPAN/regdef/$table";
+            else
+                $fileTabella = "//10.28.25.1/GrpMI/$database/regdef/$table";*/
+            $fileTabella = "C:/mi_db_tecnico/$database/regdef/".$table.".txt";
+            $readFile = fopen("\\\\$sql_server_ip\\mi_webapp_help\\importaTxt\\".$table.".txt", "r") or die("error");
+        }
 
         $nCol=0;
 
@@ -87,7 +98,11 @@
         }
 
         //bulk insert
-        $q2="BULK INSERT [tmp_importazione_txt] FROM 'C:/mi_webapp_help/importaTxt/$table.txt'";
+        //Finche Loris non sistema cavalotti con cavallotti
+        if($table=="cavallotti")
+            $q2="BULK INSERT [tmp_importazione_txt] FROM 'C:/mi_webapp_help/importaTxt/cavalotti.txt'";
+        else
+            $q2="BULK INSERT [tmp_importazione_txt] FROM 'C:/mi_webapp_help/importaTxt/$table.txt'";
         array_push($queries,$q2);
         $r2=sqlsrv_query($conn,$q2);
         //array_push($stmts,$r2);
