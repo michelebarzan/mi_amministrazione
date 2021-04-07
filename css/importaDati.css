@@ -213,8 +213,8 @@ html
     padding-right: 25px;
     overflow: hidden;
     margin-bottom: 110px;
-    max-height:calc(100% - calc( 110px + 20px + 31px + 50px + 20px)); 
-    min-height:calc(100% - calc( 110px + 20px + 31px + 50px + 20px)); 
+    max-height:calc(100% - calc( 110px + 20px + 31px + 50px + 20px + 100px)); 
+    min-height:calc(100% - calc( 110px + 20px + 31px + 50px + 20px + 100px)); 
 }
 .log-importazione-table-title
 {
@@ -782,4 +782,8 @@ html
 .reusable-inner-container-margin
 {
 	margin:10px;
+}
+#importaDatiActionBar
+{
+    margin-top: 50px;
 }

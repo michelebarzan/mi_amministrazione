@@ -7,16 +7,6 @@ var view;
 
 window.addEventListener("load", async function(event)
 {
-    /*Swal.fire
-    ({
-        title: "Controllo accesso esclusivo...",
-        html: '<i style="color:4C91CB" class="fad fa-spinner-third fa-spin fa-4x"></i>',
-        showConfirmButton:false,
-        showCloseButton:false,
-        allowEscapeKey:false,
-        allowOutsideClick:false,
-        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
-    });*/
 	Swal.fire
     ({
         title: "Controllo accesso esclusivo...",
@@ -35,7 +25,7 @@ window.addEventListener("load", async function(event)
         if(!check)
         {
             Swal.close();
-            getElencoLogImportazioni();
+            getMascheraImportazioneDatabase(document.getElementById("btn_importazione_database"));
             insertAccessoEsclusivoImportaDati();
         }
         else
@@ -71,7 +61,7 @@ window.addEventListener("load", async function(event)
                     deleteAccessoEsclusivoImportaDati();
                     insertAccessoEsclusivoImportaDati();
                     Swal.close();
-                    getElencoLogImportazioni();
+                    getMascheraImportazioneDatabase(document.getElementById("btn_importazione_database"));
                 }
             })
         }
@@ -118,6 +108,103 @@ function checkAccessoEsclusivoImportaDati()
                 resolve("error");
         });
     });
+}
+function getMascheraImportazioneDatabase(button)
+{
+    if(view!="importazioneDatabase" && view!=null)
+        location.reload();
+    view="importazioneDatabase";
+
+    $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
+    button.style.borderBottomColor="#4C91CB";
+    button.style.fontWeight="bold";
+
+    var actionBar=document.getElementById("importaDatiActionBar");
+    actionBar.style.display="";
+    actionBar.innerHTML="";
+
+    document.getElementById("importaDatiContainer").innerHTML="";
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("id","bntImportaSingoloDatabase");
+    button.setAttribute("onclick","getPopupScegliDatabase(this)");
+    button.innerHTML='<span>Importa database txt</span><i style="margin-left:10px" class="fad fa-file-upload"></i>';
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("id","bntImportaDatabaseSql");
+    button.setAttribute("onclick","getPopupImportaDatabase(this)");
+    button.innerHTML='<span>Importa database sql</span><i style="margin-left:10px" class="fad fa-database"></i>';
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("id","bntSvuotaDatabaseSql");
+    button.setAttribute("onclick","getPopupSvuotaDatabaseSql(this)");
+    button.innerHTML='<span>Svuota database sql</span><i style="margin-left:10px" class="fad fa-eraser"></i>';
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("id","bntAggiornaAnagrafiche");
+    button.setAttribute("onclick","getPopupAggiornaAnagrafiche(this)");
+    button.innerHTML='<span>Aggiorna anagrafiche</span><i style="margin-left:10px" class="fad fa-edit"></i>';
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("id","bntSvuotaDistinte");
+    button.setAttribute("onclick","getPopupSvuotaDistinte(this)");
+    button.innerHTML='<span>Svuota distinte</span><i style="margin-left:10px" class="fad fa-eraser"></i>';
+    actionBar.appendChild(button);
+
+    getElencoLogImportazioni();
+}
+function getMascheraGestioneAnagrafiche(button)
+{
+    view="gestioneAnagrafiche";
+
+    $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
+    button.style.borderBottomColor="#4C91CB";
+    button.style.fontWeight="bold";
+
+    var actionBar=document.getElementById("importaDatiActionBar");
+    actionBar.style.display="";
+    actionBar.innerHTML="";
+
+    document.getElementById("importaDatiContainer").innerHTML="";
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("id","bntRaggruppamenti");
+    button.setAttribute("onclick","getPopupRaggruppamenti(this)");
+    button.innerHTML='<span>Raggruppamenti materie prime</span><i class="fad fa-object-group" style="margin-left:10px"></i>';
+    actionBar.appendChild(button);
+
+    getTabellaMateriePrime();
+}
+function getMascheraGenerale(button)
+{
+    view="generale";
+
+    $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
+    button.style.borderBottomColor="#4C91CB";
+    button.style.fontWeight="bold";
+
+    var actionBar=document.getElementById("importaDatiActionBar");
+    actionBar.style.display="";
+    actionBar.innerHTML="";
+
+    document.getElementById("importaDatiContainer").innerHTML="";
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("id","buttonRunSPPesoQntCabine");
+    button.setAttribute("onclick","getPopupSPPesoQntCabine(this)");
+    button.innerHTML='<span>Ricalcola peso cabine</span><i class="fad fa-weight-hanging" style="margin-left:10px"></i>';
+    actionBar.appendChild(button);
 }
 async function importaTutto(button)
 {
@@ -765,12 +852,12 @@ async function getElencoLogImportazioni()
 
     document.getElementById("importaDatiContainer").style.overflowY="";
 
-    var button=document.getElementById("bntLogImportazioni");
+    /*var button=document.getElementById("bntLogImportazioni");
     button.getElementsByTagName("span")[0].style.color="#4C91CB";
     button.getElementsByTagName("i")[0].style.color="#4C91CB";
 
     document.getElementById("bntMateriePrime").getElementsByTagName("span")[0].style.color="";
-    document.getElementById("bntMateriePrime").getElementsByTagName("i")[0].style.color="";
+    document.getElementById("bntMateriePrime").getElementsByTagName("i")[0].style.color="";*/
 
     var container=document.getElementById("importaDatiContainer");
     container.innerHTML="";
@@ -784,18 +871,6 @@ async function getElencoLogImportazioni()
     var span=document.createElement("span");
     span.innerHTML="Log importazioni";
     tableTitle.appendChild(span);
-
-    /*var button=document.createElement("button");
-    button.setAttribute("class","");
-    button.setAttribute("onclick","");
-    button.innerHTML='<span>Log importazioni</span>';
-    tableTitle.appendChild(button);
-
-    var button=document.createElement("button");
-    button.setAttribute("class","");
-    button.setAttribute("onclick","");
-    button.innerHTML='<span>Log importazioni</span>';
-    tableTitle.appendChild(button);*/
 
     container.appendChild(tableTitle);
 
@@ -1836,15 +1911,13 @@ function checkOptionSvuotaDistinte(option)
         option.setAttribute("checked","true");
     }
 }
-async function getTabellaMateriePrime(button)
+async function getTabellaMateriePrime()
 {
-    view="tabellaMateriePrime";
-
-    document.getElementById("bntLogImportazioni").getElementsByTagName("span")[0].style.color="";
+    /*document.getElementById("bntLogImportazioni").getElementsByTagName("span")[0].style.color="";
     document.getElementById("bntLogImportazioni").getElementsByTagName("i")[0].style.color="";
 
     button.getElementsByTagName("span")[0].style.color="#4C91CB";
-    button.getElementsByTagName("i")[0].style.color="#4C91CB";
+    button.getElementsByTagName("i")[0].style.color="#4C91CB";*/
 
     document.getElementById("importaDatiContainer").style.width="calc(100% - 100px)";
     document.getElementById("importaDatiContainer").style.maxWidth="calc(100% - 100px)";
@@ -2230,8 +2303,7 @@ function getPopupRaggruppamenti()
                 }
     }).then((result) => 
     {
-        if(view=="tabellaMateriePrime")
-            getTabellaMateriePrime(document.getElementById("bntMateriePrime"));
+        getTabellaMateriePrime(document.getElementById("bntMateriePrime"));
     });
 }
 async function getHotRaggruppamentiMateriePrime()
