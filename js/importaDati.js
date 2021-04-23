@@ -4,6 +4,8 @@ var errorMessages=[];
 var hot;
 var hot3;
 var view;
+var commesse;
+var exportPlugin1;
 
 window.addEventListener("load", async function(event)
 {
@@ -2556,5 +2558,202 @@ function getDataSPPesoQntCabine()
                     resolve(response);
             }
         });
+    });
+}
+async function getMascheraEsportazioneCavallottiSquadrette(button)
+{
+    view="esportazione_cavallotti_squadrette";
+
+    $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
+    button.style.borderBottomColor="#4C91CB";
+    button.style.fontWeight="bold";
+
+    var actionBar=document.getElementById("importaDatiActionBar");
+    actionBar.style.display="";
+    actionBar.innerHTML="";
+
+    document.getElementById("importaDatiContainer").innerHTML="";
+
+    var div=document.createElement("div");
+    div.setAttribute("class","rcb-select-container");
+    var span=document.createElement("span");
+    span.innerHTML="Commessa";
+    div.appendChild(span);
+    var select=document.createElement("select");
+    select.setAttribute("onchange","getHotCavallottiSquadrette()");
+    select.setAttribute("id","selectCommessaCavallottiSquadrette");
+    select.setAttribute("style","text-decoration:none");
+    commesse=await getCommesse();
+    commesse.forEach(commessa =>
+    {
+        var option=document.createElement("option");
+        option.setAttribute("value",commessa.id_commessa);
+        option.innerHTML=commessa.nome;
+        select.appendChild(option);
+    });
+    div.appendChild(select);
+    actionBar.appendChild(div);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("id","buttonEsportaCSVCavallottiSquadrette");
+    button.setAttribute("onclick","esportaCsvCavallottiSquadrette()");
+    button.innerHTML='<span>Esporta</span><i class="fad fa-file-excel" style="margin-left:10px"></i>';
+    actionBar.appendChild(button);
+
+    getHotCavallottiSquadrette();
+}
+async function getHotCavallottiSquadrette()
+{
+    document.getElementById("importaDatiContainer").style.width="calc(100% - 100px)";
+    document.getElementById("importaDatiContainer").style.maxWidth="calc(100% - 100px)";
+    document.getElementById("importaDatiContainer").style.minWidth="calc(100% - 100px)";
+    document.getElementById("importaDatiContainer").style.padding="0px";
+    document.getElementById("importaDatiContainer").style.marginLeft="50px";
+    document.getElementById("importaDatiContainer").style.marginRight="50px";
+
+    var container = document.getElementById('importaDatiContainer');
+    container.innerHTML="";
+
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    var response=await getHotDataCavallottiSquadrette();
+
+    Swal.close();
+
+    var height=container.offsetHeight;
+
+    if(response.data.length>0)
+    {
+		try {hot.destroy();} catch (error) {}
+
+        hot = new Handsontable
+        (
+            container,
+            {
+                data: response.data,
+                rowHeaders: true,
+                manualColumnResize: true,
+                colHeaders: response.colHeaders,
+                filters: true,
+                dropdownMenu: true,
+                headerTooltips: true,
+                language: 'it-IT',
+                contextMenu: true,
+                columnSorting: true,
+                width:"100%",
+                height,
+                columns:response.columns,
+                beforeChange: (changes) =>
+                {
+                    return false;
+                },
+                beforeCreateRow: (index,amount,source) =>
+                {
+                    return false;
+                },
+                beforeRemoveRow: (index,amount,physicalRows,source)  =>
+                {
+                    return false;
+                }
+            }
+        );
+        exportPlugin1 = hot.getPlugin('exportFile');
+        document.getElementById("hot-display-license-info").remove();
+        $(".handsontable .changeType").css
+        ({
+            "background": "#eee",
+            "border-radius": "0",
+            "border": "none",
+            "color": "#404040",
+            "font-size": "14px",
+            "line-height": "normal",
+            "padding": "0px",
+            "margin": "0px",
+            "float": "right"
+        });
+    }
+}
+function getHotDataCavallottiSquadrette()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        var id_commessa=document.getElementById("selectCommessaCavallottiSquadrette").value;
+        $.post("getHotDataCavallottiSquadrette.php",{id_commessa},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                try {
+                    resolve(JSON.parse(response));
+                } catch (error) {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+            }
+            else
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+                resolve([]);
+            }
+        });
+    });
+}
+function getCommesse()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.post("getAnagraficaCommesse.php",
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                try {
+                    resolve(JSON.parse(response));
+                } catch (error) {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+            }
+            else
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+                resolve([]);
+            }
+        });
+    });
+}
+function esportaCsvCavallottiSquadrette()
+{
+    var id_commessa=document.getElementById("selectCommessaCavallottiSquadrette").value;
+    var commessaObj=getFirstObjByPropValue(commesse,"id_commessa",id_commessa);
+    exportPlugin1.downloadFile('csv',
+    {
+        bom: false,
+        columnDelimiter: ';',
+        columnHeaders: false,
+        exportHiddenColumns: true,
+        exportHiddenRows: true,
+        fileExtension: 'csv',
+        filename: commessaObj.nome+"_cavallotti",
+        mimeType: 'text/csv',
+        rowDelimiter: '\r\n',
+        rowHeaders: false
     });
 }

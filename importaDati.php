@@ -38,6 +38,10 @@
 					<span>Generale</span>
 					<i class="fad fa-cog"></i>
 				</button>
+				<button class="in-page-nav-bar-button" id="btn_generale" onclick="getMascheraEsportazioneCavallottiSquadrette(this)">
+					<span>Esportazione cavallotti e squadrette</span>
+					<i class="fad fa-cog"></i>
+				</button>
 			</div>
 		</div>
 		<div class="reusable-control-bar" id="importaDatiActionBar" style="display: none;">
